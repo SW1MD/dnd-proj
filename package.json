@@ -1,0 +1,27 @@
+{
+  "name": "dnd-ai-game",
+  "version": "1.0.0",
+  "description": "AI-led D&D game with cross-platform support",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "yarn workspaces run build",
+    "dev": "concurrently \"yarn workspace @dnd/backend dev\" \"yarn workspace @dnd/desktop dev\"",
+    "dev:backend": "yarn workspace @dnd/backend dev",
+    "dev:desktop": "yarn workspace @dnd/desktop dev",
+    "dev:mobile": "yarn workspace @dnd/mobile dev",
+    "install:all": "yarn install && yarn workspace @dnd/mobile install",
+    "clean": "yarn workspaces run clean",
+    "test": "yarn workspaces run test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 
