@@ -336,9 +336,9 @@
             background: var(--surface-card);
             cursor: pointer;
             transition: all 0.2s ease;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: 600;
-            color: var(--on-surface-variant);
+            color: var(--on-surface);
         }
 
         .dice-btn:hover {
@@ -350,7 +350,8 @@
         }
 
         .dice-btn i {
-            font-size: 20px;
+            font-size: 24px;
+            color: var(--primary);
         }
 
         /* Character/Game Items */
@@ -378,15 +379,15 @@
         }
 
         .item-icon {
-            width: 48px;
-            height: 48px;
+            width: 52px;
+            height: 52px;
             border-radius: 8px;
             background: var(--primary);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 24px;
         }
 
         .item-content {
@@ -396,10 +397,11 @@
         .item-title {
             font-weight: 600;
             margin-bottom: 4px;
+            font-size: 16px;
         }
 
         .item-subtitle {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--on-surface-variant);
         }
 
@@ -488,10 +490,10 @@
 
         /* Messages/Notifications */
         .message {
-            padding: 12px 16px;
+            padding: 14px 18px;
             border-radius: 8px;
             margin-bottom: 16px;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
         }
 
@@ -511,6 +513,227 @@
             background: rgba(139, 92, 246, 0.1);
             color: var(--primary);
             border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        /* Button Icon Styles */
+        .btn i {
+            color: currentColor;
+            font-size: 16px;
+        }
+
+        .btn-primary i {
+            color: white;
+        }
+
+        .btn-secondary i {
+            color: var(--primary);
+        }
+
+        /* Icon Button Styles */
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--on-surface-variant);
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            background: var(--surface-hover);
+            color: var(--primary);
+        }
+
+        .btn-icon i {
+            font-size: 18px;
+        }
+
+        /* Messaging Styles */
+        .conversation-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 8px;
+        }
+
+        .conversation-item:hover {
+            background: var(--surface-hover);
+            border-color: var(--outline);
+        }
+
+        .conversation-item.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .conversation-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conversation-preview {
+            font-size: 12px;
+            opacity: 0.7;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conversation-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .conversation-time {
+            font-size: 11px;
+            opacity: 0.6;
+        }
+
+        .unread-badge {
+            background: var(--error);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .conversation-item.active .unread-badge {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 16px;
+            background: var(--surface-hover);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .message-item {
+            display: flex;
+            margin-bottom: 16px;
+        }
+
+        .message-item.own {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            background: var(--surface-card);
+            border: 1px solid var(--outline);
+        }
+
+        .message-item.own .message-content {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .message-text {
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.6;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--outline);
+            border-radius: 20px;
+            background: var(--surface-hover);
+            color: var(--on-surface);
+            resize: none;
+            min-height: 44px;
+            max-height: 120px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        .send-button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .send-button:hover {
+            background: var(--primary-hover);
+            transform: scale(1.05);
+        }
+
+        .send-button:disabled {
+            background: var(--surface-variant);
+            color: var(--on-surface-variant);
+            cursor: not-allowed;
+            transform: none;
         }
     </style>
 </head>
@@ -597,8 +820,8 @@
                             <p id="user-email">user@example.com</p>
                         </div>
                     </div>
-                    <button class="btn btn-secondary" onclick="logout()" style="width: 100%; margin-top: 12px; font-size: 13px;">
-                        <i class="fas fa-sign-out-alt"></i>
+                    <button class="btn btn-secondary" onclick="logout()" style="width: 100%; margin-top: 12px; font-size: 16px;">
+                        <i class="fas fa-sign-out-alt" style="color: var(--primary);"></i>
                         Sign Out
                     </button>
                 </div>
@@ -689,7 +912,7 @@
                                         D6
                                     </button>
                                 </div>
-                                <div id="quick-roll-result" class="text-center" style="color: var(--on-surface-variant); font-size: 14px;">
+                                <div id="quick-roll-result" class="text-center" style="color: var(--on-surface-variant); font-size: 16px;">
                                     Roll some dice!
                                 </div>
                             </div>
@@ -709,7 +932,7 @@
 
                     <div id="characters-list" class="item-list">
                         <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
-                            <i class="fas fa-user-ninja" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                            <i class="fas fa-user-ninja" style="font-size: 56px; margin-bottom: 16px; display: block; opacity: 0.8; color: var(--primary);"></i>
                             <h3 style="margin-bottom: 8px;">No Characters Yet</h3>
                             <p>Create your first character to get started!</p>
                         </div>
@@ -728,7 +951,7 @@
 
                     <div id="games-list" class="item-list">
                         <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
-                            <i class="fas fa-gamepad" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                            <i class="fas fa-gamepad" style="font-size: 56px; margin-bottom: 16px; display: block; opacity: 0.8; color: var(--primary);"></i>
                             <h3 style="margin-bottom: 8px;">No Games Yet</h3>
                             <p>Create or join your first campaign!</p>
                         </div>
@@ -807,7 +1030,7 @@
                                 </div>
                                 <div id="dice-result" class="text-center" style="padding: 40px;">
                                     <div style="font-size: 48px; font-weight: 600; color: var(--primary); margin-bottom: 8px;" id="dice-total">-</div>
-                                    <div style="color: var(--on-surface-variant); font-size: 14px;" id="dice-details">Roll some dice to see results</div>
+                                    <div style="color: var(--on-surface-variant); font-size: 16px;" id="dice-details">Roll some dice to see results</div>
                                 </div>
                             </div>
 
@@ -847,7 +1070,7 @@
                         </div>
                         <div id="friends-list">
                             <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
-                                <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                                <i class="fas fa-users" style="font-size: 56px; margin-bottom: 16px; display: block; opacity: 0.8; color: var(--primary);"></i>
                                 <h3 style="margin-bottom: 8px;">Loading friends...</h3>
                             </div>
                         </div>
@@ -978,7 +1201,7 @@
                                 </div>
                                 <div id="friend-requests-list" class="profile-section">
                                     <div class="text-center" style="padding: 40px; color: var(--on-surface-variant);">
-                                        <i class="fas fa-user-friends" style="font-size: 32px; margin-bottom: 12px; display: block; opacity: 0.5;"></i>
+                                        <i class="fas fa-user-friends" style="font-size: 36px; margin-bottom: 12px; display: block; opacity: 0.8; color: var(--primary);"></i>
                                         <p>Loading friend requests...</p>
                                     </div>
                                 </div>
@@ -1168,15 +1391,46 @@
                     <div class="content-header">
                         <div>
                             <h1 class="page-title">Messages</h1>
-                            <p class="page-subtitle">Chat with your party</p>
+                            <p class="page-subtitle">Chat with your friends</p>
                         </div>
+                        <button class="btn btn-primary" onclick="showNewMessageModal()">
+                            <i class="fas fa-plus"></i>
+                            New Message
+                        </button>
                     </div>
 
-                    <div class="card">
-                        <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
-                            <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
-                            <h3 style="margin-bottom: 8px;">No Messages</h3>
-                            <p>Your conversations will appear here</p>
+                    <div class="grid grid-2">
+                        <!-- Conversations List -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-comments"></i>
+                                    Conversations
+                                </h3>
+                            </div>
+                            <div id="conversations-list" style="max-height: 500px; overflow-y: auto;">
+                                <div class="text-center" style="padding: 40px; color: var(--on-surface-variant);">
+                                    <i class="fas fa-comments" style="font-size: 40px; margin-bottom: 12px; display: block; opacity: 0.6;"></i>
+                                    <p>Loading conversations...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Window -->
+                        <div class="card">
+                            <div class="card-header" id="chat-header" style="display: none;">
+                                <h3 class="card-title" id="chat-partner-name">
+                                    <i class="fas fa-user"></i>
+                                    Select a conversation
+                                </h3>
+                            </div>
+                            <div id="chat-window">
+                                <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
+                                    <i class="fas fa-comment-dots" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                                    <h3 style="margin-bottom: 8px;">Select a Conversation</h3>
+                                    <p>Choose someone to chat with from your conversations</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1590,15 +1844,15 @@
         }
 
         .activity-icon {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             background: var(--primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 14px;
+            font-size: 18px;
             flex-shrink: 0;
         }
 
@@ -1608,7 +1862,7 @@
         }
 
         .activity-text {
-            font-size: 14px;
+            font-size: 16px;
             line-height: 1.4;
             color: var(--on-surface);
             margin-bottom: 4px;
@@ -1626,14 +1880,14 @@
         }
 
         .activity-description {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--on-surface-variant);
             margin: 6px 0 4px 0;
             line-height: 1.3;
         }
 
         .activity-time {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--on-surface-variant);
             opacity: 0.7;
         }
@@ -1744,7 +1998,7 @@
         }
 
         .stat-item .stat-label {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--on-surface-variant);
             margin-bottom: 4px;
             text-transform: none;
@@ -1753,7 +2007,7 @@
         }
 
         .stat-item .stat-value {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             color: var(--on-surface);
         }
@@ -1780,14 +2034,14 @@
         }
 
         .security-label {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--on-surface);
             margin-bottom: 4px;
         }
 
         .security-desc {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--on-surface-variant);
         }
 
@@ -2697,7 +2951,7 @@
                                 ${actionButtons}
                             </div>
                         </div>
-                        <p style="color: var(--on-surface-variant); font-size: 14px; line-height: 1.4; margin: 0;">
+                        <p style="color: var(--on-surface-variant); font-size: 15px; line-height: 1.4; margin: 0;">
                             ${game.description ? game.description.substring(0, 150) + (game.description.length > 150 ? '...' : '') : 'No description available.'}
                         </p>
                     </div>
@@ -2728,6 +2982,8 @@
             // Load section-specific data
             if (sectionName === 'social') {
                 loadFriends();
+            } else if (sectionName === 'messages') {
+                loadConversations();
             }
         }
 
@@ -2801,9 +3057,9 @@
                 <div style="display: flex; justify-content: between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--outline);">
                     <div>
                         <strong style="color: var(--primary);">${item.result}</strong>
-                        <span style="color: var(--on-surface-variant); font-size: 13px; margin-left: 8px;">${item.details}</span>
+                        <span style="color: var(--on-surface-variant); font-size: 14px; margin-left: 8px;">${item.details}</span>
                     </div>
-                    <span style="color: var(--on-surface-variant); font-size: 12px;">${item.timestamp}</span>
+                    <span style="color: var(--on-surface-variant); font-size: 13px;">${item.timestamp}</span>
                 </div>
             `).join('');
         }
@@ -4090,7 +4346,31 @@
         }
 
         function sendMessageToUser() {
-            showMessage('Direct messaging coming soon!', 'info');
+            if (!currentPublicUserId) return;
+            
+            // Switch to messages section and start conversation
+            showSection('messages');
+            loadConversations();
+            
+            // Find if conversation already exists
+            setTimeout(() => {
+                const conversations = document.querySelectorAll('.conversation-item');
+                let existingConversation = null;
+                
+                conversations.forEach(conv => {
+                    if (conv.getAttribute('data-partner-id') === currentPublicUserId) {
+                        existingConversation = conv;
+                    }
+                });
+                
+                if (existingConversation) {
+                    // Open existing conversation
+                    existingConversation.click();
+                } else {
+                    // Start new conversation
+                    openChatWith(currentPublicUserId);
+                }
+            }, 500);
         }
 
         function editOwnProfile() {
@@ -4233,7 +4513,29 @@
         }
 
         function sendMessageToFriend(friendId) {
-            showMessage('Direct messaging coming soon!', 'info');
+            // Switch to messages section and start conversation
+            showSection('messages');
+            loadConversations();
+            
+            // Find if conversation already exists
+            setTimeout(() => {
+                const conversations = document.querySelectorAll('.conversation-item');
+                let existingConversation = null;
+                
+                conversations.forEach(conv => {
+                    if (conv.getAttribute('data-partner-id') === friendId) {
+                        existingConversation = conv;
+                    }
+                });
+                
+                if (existingConversation) {
+                    // Open existing conversation
+                    existingConversation.click();
+                } else {
+                    // Start new conversation
+                    openChatWith(friendId);
+                }
+            }, 500);
         }
 
         // Messages
@@ -4248,6 +4550,327 @@
             setTimeout(() => {
                 message.remove();
             }, 5000);
+        }
+
+        // Messaging System Functions
+        let currentChatPartner = null;
+        let conversations = [];
+
+        async function loadConversations() {
+            try {
+                const response = await apiCall('/social/conversations');
+                conversations = response.data.conversations;
+                displayConversations();
+            } catch (error) {
+                console.error('Failed to load conversations:', error);
+                displayConversationsError();
+            }
+        }
+
+        function displayConversations() {
+            const container = document.getElementById('conversations-list');
+            
+            if (conversations.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center" style="padding: 40px; color: var(--on-surface-variant);">
+                        <i class="fas fa-comment-dots" style="font-size: 40px; margin-bottom: 12px; display: block; opacity: 0.6;"></i>
+                        <p>No conversations yet</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Start a new conversation with a friend!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            conversations.forEach(conversation => {
+                const partner = conversation.partner;
+                const partnerName = partner.display_name || partner.username;
+                const lastMessage = conversation.last_message || 'No messages yet';
+                const timeAgo = conversation.last_message_at ? formatTimeAgo(new Date(conversation.last_message_at)) : '';
+                const unreadCount = conversation.unread_count || 0;
+                
+                html += `
+                    <div class="conversation-item" data-partner-id="${partner.id}" onclick="openChat('${partner.id}')">
+                        <div class="conversation-avatar">
+                            ${partnerName.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">${partnerName}</div>
+                            <div class="conversation-preview">${lastMessage}</div>
+                        </div>
+                        <div class="conversation-meta">
+                            ${timeAgo ? `<div class="conversation-time">${timeAgo}</div>` : ''}
+                            ${unreadCount > 0 ? `<div class="unread-badge">${unreadCount}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function displayConversationsError() {
+            const container = document.getElementById('conversations-list');
+            container.innerHTML = `
+                <div class="text-center" style="padding: 40px; color: var(--on-surface-variant);">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 40px; margin-bottom: 12px; display: block; opacity: 0.6; color: var(--error);"></i>
+                    <p>Failed to load conversations</p>
+                    <button class="btn btn-secondary btn-sm" onclick="loadConversations()" style="margin-top: 12px;">
+                        <i class="fas fa-refresh"></i>
+                        Try Again
+                    </button>
+                </div>
+            `;
+        }
+
+        async function openChat(partnerId) {
+            try {
+                // Update active conversation
+                document.querySelectorAll('.conversation-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`[data-partner-id="${partnerId}"]`).classList.add('active');
+                
+                // Get partner info
+                const conversation = conversations.find(c => c.partner.id === partnerId);
+                if (!conversation) return;
+                
+                const partner = conversation.partner;
+                const partnerName = partner.display_name || partner.username;
+                
+                // Update chat header
+                document.getElementById('chat-header').style.display = 'block';
+                document.getElementById('chat-partner-name').innerHTML = `
+                    <i class="fas fa-user"></i>
+                    ${partnerName}
+                `;
+                
+                // Load messages
+                const response = await apiCall(`/social/messages/${partnerId}`);
+                const messages = response.data.messages;
+                
+                displayMessages(messages);
+                currentChatPartner = partnerId;
+                
+                // Refresh conversations to update unread counts
+                loadConversations();
+                
+            } catch (error) {
+                console.error('Failed to open chat:', error);
+                showMessage('Failed to load conversation', 'error');
+            }
+        }
+
+        function displayMessages(messages) {
+            const chatWindow = document.getElementById('chat-window');
+            
+            if (messages.length === 0) {
+                chatWindow.innerHTML = `
+                    <div class="chat-messages">
+                        <div class="text-center" style="padding: 40px; color: var(--on-surface-variant);">
+                            <i class="fas fa-comment-dots" style="font-size: 32px; margin-bottom: 12px; display: block; opacity: 0.5;"></i>
+                            <p>No messages yet</p>
+                            <p style="font-size: 12px; margin-top: 8px;">Start the conversation!</p>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <textarea class="chat-input" placeholder="Type your message..." rows="1" onkeypress="handleChatKeyPress(event)" oninput="autoResizeTextarea(this)"></textarea>
+                        <button class="send-button" onclick="sendChatMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let messagesHtml = '';
+            messages.forEach(message => {
+                const isOwn = message.sender_id === currentUser.id;
+                const timeAgo = formatTimeAgo(new Date(message.created_at));
+                
+                messagesHtml += `
+                    <div class="message-item ${isOwn ? 'own' : ''}">
+                        <div class="message-content">
+                            <div class="message-text">${message.content}</div>
+                            <div class="message-time">${timeAgo}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            chatWindow.innerHTML = `
+                <div class="chat-messages">
+                    ${messagesHtml}
+                </div>
+                <div class="chat-input-area">
+                    <textarea class="chat-input" placeholder="Type your message..." rows="1" onkeypress="handleChatKeyPress(event)" oninput="autoResizeTextarea(this)"></textarea>
+                    <button class="send-button" onclick="sendChatMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            `;
+            
+            // Scroll to bottom
+            const messagesContainer = chatWindow.querySelector('.chat-messages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        }
+
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+        }
+
+        async function sendChatMessage() {
+            if (!currentChatPartner) return;
+            
+            const textarea = document.querySelector('.chat-input');
+            const content = textarea.value.trim();
+            
+            if (!content) return;
+            
+            const sendButton = document.querySelector('.send-button');
+            sendButton.disabled = true;
+            
+            try {
+                await apiCall('/social/messages', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        receiverId: currentChatPartner,
+                        content: content
+                    })
+                });
+                
+                textarea.value = '';
+                textarea.style.height = 'auto';
+                
+                // Refresh the chat
+                openChat(currentChatPartner);
+                
+            } catch (error) {
+                console.error('Failed to send message:', error);
+                showMessage('Failed to send message', 'error');
+            } finally {
+                sendButton.disabled = false;
+            }
+        }
+
+        async function openChatWith(partnerId) {
+            currentChatPartner = partnerId;
+            
+            try {
+                // Get partner info
+                const userData = await apiCall(`/users/public/${partnerId}`);
+                const partner = userData.data.user;
+                const partnerName = partner.display_name || partner.username;
+                
+                // Update chat header
+                document.getElementById('chat-header').style.display = 'block';
+                document.getElementById('chat-partner-name').innerHTML = `
+                    <i class="fas fa-user"></i>
+                    ${partnerName}
+                `;
+                
+                // Show empty chat
+                displayMessages([]);
+                
+                // Add to conversations if not already there
+                if (!conversations.find(c => c.partner.id === partnerId)) {
+                    conversations.unshift({
+                        partner: partner,
+                        last_message: null,
+                        last_message_at: null,
+                        unread_count: 0
+                    });
+                    displayConversations();
+                }
+                
+            } catch (error) {
+                console.error('Failed to open chat:', error);
+                showMessage('Failed to start conversation', 'error');
+            }
+        }
+
+        function showNewMessageModal() {
+            const content = `
+                <div class="form-group">
+                    <label class="form-label">Start a conversation with a friend</label>
+                    <div id="friends-to-message" style="max-height: 300px; overflow-y: auto;">
+                        <div class="text-center" style="padding: 20px; color: var(--on-surface-variant);">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+                            <p>Loading friends...</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            showModal('New Message', content);
+            loadFriendsForMessaging();
+        }
+
+        async function loadFriendsForMessaging() {
+            try {
+                const response = await apiCall('/social/friends');
+                const friends = response.data.friends;
+                
+                const container = document.getElementById('friends-to-message');
+                
+                if (friends.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center" style="padding: 40px; color: var(--on-surface-variant);">
+                            <i class="fas fa-user-friends" style="font-size: 32px; margin-bottom: 12px; display: block; opacity: 0.5;"></i>
+                            <p>No friends to message</p>
+                            <p style="font-size: 12px; margin-top: 8px;">Add some friends first!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                friends.forEach(friendData => {
+                    const friend = friendData.friend;
+                    const friendName = friend.display_name || friend.username;
+                    
+                    html += `
+                        <div class="friend-item" style="cursor: pointer; margin-bottom: 8px;" onclick="startConversationWith('${friend.id}')">
+                            <div class="friend-info">
+                                <div class="friend-avatar">
+                                    ${friendName.charAt(0).toUpperCase()}
+                                </div>
+                                <div class="friend-details">
+                                    <div class="friend-name">${friendName}</div>
+                                    <div class="friend-meta">@${friend.username}</div>
+                                </div>
+                            </div>
+                            <div class="friend-actions">
+                                <i class="fas fa-comment" style="color: var(--primary);"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Failed to load friends:', error);
+                document.getElementById('friends-to-message').innerHTML = `
+                    <div class="text-center" style="padding: 40px; color: var(--on-surface-variant);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; margin-bottom: 12px; display: block; opacity: 0.5; color: var(--error);"></i>
+                        <p>Failed to load friends</p>
+                    </div>
+                `;
+            }
+        }
+
+        function startConversationWith(friendId) {
+            closeModal();
+            openChatWith(friendId);
         }
     </script>
 </body>
