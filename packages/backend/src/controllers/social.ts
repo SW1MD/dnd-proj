@@ -835,9 +835,15 @@ export const socialController = {
           'user_posts.*',
           'users.username as author_username',
           'users.display_name as author_display_name',
-          'users.avatar_url as author_avatar'
+          'users.avatar_url as author_avatar',
+          'game_sessions.name as attached_game_name',
+          'game_sessions.system as attached_game_system',
+          'game_sessions.status as attached_game_status',
+          'game_sessions.max_players as attached_game_max_players',
+          'game_sessions.dm_user_id as attached_game_dm_id'
         ])
         .leftJoin('users', 'user_posts.user_id', 'users.id')
+        .leftJoin('game_sessions', 'user_posts.attached_game_id', 'game_sessions.id')
         .whereIn('user_posts.user_id', friendIds)
         .where('user_posts.is_public', true)
         .orderBy('user_posts.created_at', 'desc')
@@ -876,7 +882,7 @@ export const socialController = {
         return;
       }
 
-      const { content, media_urls, post_type, metadata, is_public } = req.body;
+      const { content, media_urls, post_type, metadata, is_public, attached_game_id } = req.body;
 
       if (!content) {
         res.status(400).json({ success: false, error: { message: 'Content is required.', statusCode: 400 } });
@@ -886,6 +892,26 @@ export const socialController = {
       const db = getDatabase();
       const postId = uuidv4();
 
+      // If attached_game_id is provided, verify the game exists and user has access
+      if (attached_game_id) {
+        const game = await db('game_sessions').where('id', attached_game_id).first();
+        if (!game) {
+          res.status(400).json({ success: false, error: { message: 'Attached game not found.', statusCode: 400 } });
+          return;
+        }
+        
+        // Check if user is the DM or a player in the game
+        const isPlayerInGame = await db('game_players')
+          .where('game_id', attached_game_id)
+          .where('user_id', req.user.id)
+          .first();
+        
+        if (game.dm_user_id !== req.user.id && !isPlayerInGame) {
+          res.status(403).json({ success: false, error: { message: 'You can only attach games you are part of.', statusCode: 403 } });
+          return;
+        }
+      }
+
       await db('user_posts').insert({
         id: postId,
         user_id: req.user.id,
@@ -893,10 +919,11 @@ export const socialController = {
         media_urls: JSON.stringify(media_urls || []),
         post_type: post_type || 'text',
         metadata: JSON.stringify(metadata || {}),
-        is_public: is_public !== false
+        is_public: is_public !== false,
+        attached_game_id: attached_game_id || null
       });
 
-      logger.info(`Post created: ${postId} by ${req.user.username}`);
+      logger.info(`Post created: ${postId} by ${req.user.username}${attached_game_id ? ' with attached game' : ''}`);
 
       res.status(201).json({
         success: true,

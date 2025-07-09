@@ -1638,6 +1638,48 @@ THIS SHOULD BE A LINTER ERROR<!DOCTYPE html>
             opacity: 0.7;
         }
 
+        /* Attached Game Styles */
+        .attached-game {
+            margin: 8px 0;
+            padding: 12px;
+            background: var(--surface-variant);
+            border-radius: 8px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .attached-game:hover {
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .attached-game-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .attached-game-name {
+            font-weight: 600;
+            color: var(--on-surface);
+        }
+
+        .attached-game-system {
+            font-size: 13px;
+            color: var(--on-surface-variant);
+        }
+
+        .attached-game-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .attached-game-actions .btn {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
         /* Stat Card Styles */
         .stat-card {
             display: flex;
@@ -2526,7 +2568,15 @@ THIS SHOULD BE A LINTER ERROR<!DOCTYPE html>
                     result: result,
                     time: timeAgo,
                     icon: icon,
-                    content: post.content ? post.content.substring(0, 100) + (post.content.length > 100 ? '...' : '') : ''
+                    content: post.content ? post.content.substring(0, 100) + (post.content.length > 100 ? '...' : '') : '',
+                    attachedGame: post.attached_game_id ? {
+                        id: post.attached_game_id,
+                        name: post.attached_game_name,
+                        system: post.attached_game_system,
+                        status: post.attached_game_status,
+                        maxPlayers: post.attached_game_max_players,
+                        dmId: post.attached_game_dm_id
+                    } : null
                 };
             });
 
@@ -2541,6 +2591,28 @@ THIS SHOULD BE A LINTER ERROR<!DOCTYPE html>
                             ${activity.result ? `<span class="activity-result">"${activity.result}"</span>` : ''}
                         </div>
                         ${activity.content ? `<div class="activity-description">${activity.content}</div>` : ''}
+                        ${activity.attachedGame ? `
+                            <div class="attached-game">
+                                <div class="attached-game-header">
+                                    <i class="fas fa-gamepad"></i>
+                                    <span class="attached-game-name">${activity.attachedGame.name}</span>
+                                    <span class="attached-game-system">${activity.attachedGame.system}</span>
+                                    <span class="status-badge status-${activity.attachedGame.status}">${activity.attachedGame.status}</span>
+                                </div>
+                                <div class="attached-game-actions">
+                                    <button class="btn btn-secondary btn-sm" onclick="viewAttachedGame('${activity.attachedGame.id}')">
+                                        <i class="fas fa-eye"></i>
+                                        View Game
+                                    </button>
+                                    ${activity.attachedGame.status === 'recruiting' ? `
+                                        <button class="btn btn-primary btn-sm" onclick="joinGameFromPost('${activity.attachedGame.id}')">
+                                            <i class="fas fa-user-plus"></i>
+                                            Join Game
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        ` : ''}
                         <div class="activity-time">${activity.time}</div>
                     </div>
                 </div>
