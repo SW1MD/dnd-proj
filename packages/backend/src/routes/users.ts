@@ -12,6 +12,9 @@ router.get('/profile', userController.getProfile);
 router.put('/profile', userController.updateProfile);
 router.delete('/profile', userController.deleteProfile);
 
+// Public profile route
+router.get('/public/:userId', userController.getPublicProfile);
+
 // User statistics
 router.get('/stats', userController.getStats);
 

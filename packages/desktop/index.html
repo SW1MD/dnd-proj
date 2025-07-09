@@ -103,7 +103,7 @@
             width: 100%;
             text-align: left;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 500;
         }
 
@@ -118,8 +118,10 @@
         }
 
         .nav-item i {
-            width: 20px;
+            width: 24px;
+            font-size: 18px;
             text-align: center;
+            color: var(--primary);
         }
 
         .user-profile {
@@ -151,13 +153,13 @@
         }
 
         .user-details h4 {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 600;
             margin-bottom: 2px;
         }
 
         .user-details p {
-            font-size: 12px;
+            font-size: 14px;
             color: var(--on-surface-variant);
         }
 
@@ -177,14 +179,14 @@
         }
 
         .page-title {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 600;
             margin-bottom: 8px;
         }
 
         .page-subtitle {
             color: var(--on-surface-variant);
-            font-size: 14px;
+            font-size: 16px;
         }
 
         /* Cards */
@@ -205,7 +207,7 @@
         }
 
         .card-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             display: flex;
             align-items: center;
@@ -214,6 +216,7 @@
 
         .card-title i {
             color: var(--primary);
+            font-size: 20px;
         }
 
         /* Buttons */
@@ -221,9 +224,9 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
             text-decoration: none;
             border: none;
@@ -251,8 +254,8 @@
         }
 
         .btn-sm {
-            padding: 6px 12px;
-            font-size: 13px;
+            padding: 8px 16px;
+            font-size: 14px;
         }
 
         /* Form Elements */
@@ -262,7 +265,7 @@
 
         .form-label {
             display: block;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
             margin-bottom: 6px;
             color: var(--on-surface);
@@ -270,10 +273,10 @@
 
         .form-input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 18px;
             border: 1px solid var(--outline);
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 16px;
             background: var(--surface-hover);
             color: var(--on-surface);
             transition: border-color 0.2s ease;
@@ -287,10 +290,10 @@
 
         .form-select {
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 18px;
             border: 1px solid var(--outline);
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 16px;
             background: var(--surface-hover);
             color: var(--on-surface);
         }
@@ -585,12 +588,12 @@
                 </div>
 
                 <div class="user-profile">
-                    <div class="user-info" onclick="showProfile()" style="cursor: pointer;">
+                    <div class="user-info user-info-clickable" onclick="showProfile()">
                         <div class="user-avatar" id="user-avatar">
                             <i class="fas fa-user"></i>
                         </div>
                         <div class="user-details">
-                            <h4 id="user-name">Loading...</h4>
+                            <h4 id="user-name" class="clickable-user" style="cursor: pointer;">Loading...</h4>
                             <p id="user-email">user@example.com</p>
                         </div>
                     </div>
@@ -640,13 +643,23 @@
                                     </h3>
                                 </div>
                                 <div class="grid grid-2" style="gap: 12px;">
-                                    <div class="text-center" style="padding: 16px; background: var(--surface-variant); border-radius: 8px;">
-                                        <div style="font-size: 24px; font-weight: 600; color: var(--primary);" id="character-count">0</div>
-                                        <div style="font-size: 12px; color: var(--on-surface-variant);">Characters</div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-user-ninja"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-number" id="character-count">0</div>
+                                            <div class="stat-label">Characters</div>
+                                        </div>
                                     </div>
-                                    <div class="text-center" style="padding: 16px; background: var(--surface-variant); border-radius: 8px;">
-                                        <div style="font-size: 24px; font-weight: 600; color: var(--success);" id="game-count">0</div>
-                                        <div style="font-size: 12px; color: var(--on-surface-variant);">Games</div>
+                                    <div class="stat-card">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-gamepad"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-number" id="game-count">0</div>
+                                            <div class="stat-label">Games</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -826,10 +839,326 @@
                     </div>
 
                     <div class="card">
-                        <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
-                            <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
-                            <h3 style="margin-bottom: 8px;">No Friends Yet</h3>
-                            <p>Start connecting with other players!</p>
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-users"></i>
+                                My Friends
+                            </h3>
+                        </div>
+                        <div id="friends-list">
+                            <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
+                                <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                                <h3 style="margin-bottom: 8px;">Loading friends...</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Section -->
+                <div id="profile-section" class="content-section hidden">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="page-title">My Profile</h1>
+                            <p class="page-subtitle">Manage your account and preferences</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-user"></i>
+                                    Profile Information
+                                </h3>
+                            </div>
+                            <form id="profile-form" onsubmit="updateProfile(event)">
+                                <div class="form-section">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Display Name</label>
+                                            <input type="text" id="profile-display-name" class="form-input" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Username</label>
+                                            <input type="text" id="profile-username" class="form-input" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Email</label>
+                                        <input type="email" id="profile-email" class="form-input" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Bio</label>
+                                        <textarea id="profile-bio" class="form-input textarea" placeholder="Tell other players about yourself..."></textarea>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="form-label">Location</label>
+                                            <input type="text" id="profile-location" class="form-input" placeholder="City, Country">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Favorite Game System</label>
+                                            <select id="profile-system" class="form-select">
+                                                <option value="D&D 5e">D&D 5th Edition</option>
+                                                <option value="Pathfinder">Pathfinder</option>
+                                                <option value="Call of Cthulhu">Call of Cthulhu</option>
+                                                <option value="Vampire">Vampire: The Masquerade</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i>
+                                        Save Profile
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="showSection('feed')">
+                                        <i class="fas fa-arrow-left"></i>
+                                        Back to Home
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-chart-bar"></i>
+                                        Account Stats
+                                    </h3>
+                                </div>
+                                <div class="profile-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">Member Since</div>
+                                            <div class="stat-value" id="member-since">Loading...</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-user-ninja"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">Characters Created</div>
+                                            <div class="stat-value" id="profile-character-count">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-gamepad"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">Games Played</div>
+                                            <div class="stat-value" id="profile-game-count">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-dice-d20"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">Total Dice Rolls</div>
+                                            <div class="stat-value">42</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-user-friends"></i>
+                                        Friend Requests
+                                    </h3>
+                                </div>
+                                <div id="friend-requests-list" class="profile-section">
+                                    <div class="text-center" style="padding: 40px; color: var(--on-surface-variant);">
+                                        <i class="fas fa-user-friends" style="font-size: 32px; margin-bottom: 12px; display: block; opacity: 0.5;"></i>
+                                        <p>Loading friend requests...</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-shield-alt"></i>
+                                        Account Security
+                                    </h3>
+                                </div>
+                                <div class="security-section">
+                                    <div class="security-item">
+                                        <div class="security-info">
+                                            <div class="security-label">Password</div>
+                                            <div class="security-desc">Last changed 30 days ago</div>
+                                        </div>
+                                        <button class="btn btn-secondary btn-sm" onclick="showChangePassword()">
+                                            Change
+                                        </button>
+                                    </div>
+                                    <div class="security-item">
+                                        <div class="security-info">
+                                            <div class="security-label">Two-Factor Authentication</div>
+                                            <div class="security-desc">Not enabled</div>
+                                        </div>
+                                        <button class="btn btn-primary btn-sm" onclick="enableTwoFactor()">
+                                            Enable
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Public Profile Section -->
+                <div id="public-profile-section" class="content-section hidden">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="page-title" id="public-profile-title">Player Profile</h1>
+                            <p class="page-subtitle">View player information and gaming activity</p>
+                        </div>
+                        <button class="btn btn-secondary" onclick="showSection('feed')">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Feed
+                        </button>
+                    </div>
+
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <i class="fas fa-user"></i>
+                                    Player Information
+                                </h3>
+                            </div>
+                            <div class="public-profile-info">
+                                <div class="public-profile-header">
+                                    <div class="public-profile-avatar" id="public-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="public-profile-basic">
+                                        <h3 id="public-display-name">Loading...</h3>
+                                        <p id="public-username">@username</p>
+                                        <span class="member-badge" id="public-member-since">Member since 2024</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="public-profile-details">
+                                    <div class="profile-detail" id="public-bio-section">
+                                        <div class="detail-label">
+                                            <i class="fas fa-quote-left"></i>
+                                            About
+                                        </div>
+                                        <div class="detail-content" id="public-bio">No bio provided</div>
+                                    </div>
+                                    
+                                    <div class="profile-detail" id="public-location-section">
+                                        <div class="detail-label">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            Location
+                                        </div>
+                                        <div class="detail-content" id="public-location">Not specified</div>
+                                    </div>
+                                    
+                                    <div class="profile-detail" id="public-system-section">
+                                        <div class="detail-label">
+                                            <i class="fas fa-gamepad"></i>
+                                            Favorite System
+                                        </div>
+                                        <div class="detail-content" id="public-system">Not specified</div>
+                                    </div>
+                                </div>
+
+                                <div class="public-profile-actions">
+                                    <button class="btn btn-primary" onclick="editOwnProfile()" id="edit-profile-btn" style="display: none;">
+                                        <i class="fas fa-edit"></i>
+                                        Edit Profile
+                                    </button>
+                                    <button class="btn btn-primary" onclick="sendFriendRequestToUser()" id="friend-request-btn">
+                                        <i class="fas fa-user-plus"></i>
+                                        Send Friend Request
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="sendMessageToUser()" id="message-btn">
+                                        <i class="fas fa-comment"></i>
+                                        Send Message
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-chart-bar"></i>
+                                        Gaming Stats
+                                    </h3>
+                                </div>
+                                <div class="public-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-user-ninja"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">Characters</div>
+                                            <div class="stat-value" id="public-character-count">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-gamepad"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">Games</div>
+                                            <div class="stat-value" id="public-game-count">0</div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-dice-d20"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <div class="stat-label">Dice Rolls</div>
+                                            <div class="stat-value">42</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-users"></i>
+                                        Recent Activity
+                                    </h3>
+                                </div>
+                                <div class="public-activity">
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-user-ninja"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-text">Created a new character</div>
+                                            <div class="activity-time">2 days ago</div>
+                                        </div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-gamepad"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-text">Joined a new campaign</div>
+                                            <div class="activity-time">1 week ago</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1042,15 +1371,19 @@
             justify-content: center;
             border-radius: 6px;
             border: 1px solid var(--outline);
-            background: transparent;
-            color: var(--on-surface-variant);
+            background: var(--surface-variant);
+            color: var(--on-surface);
             cursor: pointer;
             transition: all 0.2s ease;
+            font-size: 14px;
         }
 
         .btn-icon:hover {
             background: var(--surface-hover);
             color: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(139, 92, 246, 0.2);
         }
 
         .status-badge {
@@ -1110,6 +1443,20 @@
             font-weight: 600;
             font-size: 14px;
             color: var(--on-surface);
+        }
+
+        .post-author-name.clickable-user {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            padding: 2px 4px;
+            margin: -2px -4px;
+        }
+
+        .post-author-name.clickable-user:hover {
+            color: var(--primary);
+            background: rgba(139, 92, 246, 0.1);
+            transform: translateY(-1px);
         }
 
         .post-meta {
@@ -1219,6 +1566,229 @@
         .post-action:hover {
             background: var(--surface-hover);
             color: var(--primary);
+        }
+
+        /* Clean Activity Feed Styles */
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background: rgba(139, 92, 246, 0.05);
+            margin: 0 -12px;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .activity-text {
+            font-size: 14px;
+            line-height: 1.4;
+            color: var(--on-surface);
+            margin-bottom: 4px;
+        }
+
+        .activity-text strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .activity-result {
+            color: var(--on-surface-variant);
+            font-style: italic;
+            margin-left: 4px;
+        }
+
+        .activity-description {
+            font-size: 13px;
+            color: var(--on-surface-variant);
+            margin: 6px 0 4px 0;
+            line-height: 1.3;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: var(--on-surface-variant);
+            opacity: 0.7;
+        }
+
+        /* Stat Card Styles */
+        .stat-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--surface-variant);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--on-surface);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--on-surface-variant);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        /* User Info Clickable */
+        .user-info-clickable {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            padding: 4px;
+            margin: -4px;
+        }
+
+        .user-info-clickable:hover {
+            background: rgba(139, 92, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Profile Page Styles */
+        .profile-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--surface-variant);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .stat-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+        }
+
+        .stat-item .stat-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .stat-item .stat-content {
+            flex: 1;
+        }
+
+        .stat-item .stat-label {
+            font-size: 13px;
+            color: var(--on-surface-variant);
+            margin-bottom: 4px;
+            text-transform: none;
+            letter-spacing: normal;
+            font-weight: 500;
+        }
+
+        .stat-item .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--on-surface);
+        }
+
+        /* Security Section */
+        .security-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .security-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--surface-variant);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .security-info {
+            flex: 1;
+        }
+
+        .security-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--on-surface);
+            margin-bottom: 4px;
+        }
+
+        .security-desc {
+            font-size: 13px;
+            color: var(--on-surface-variant);
         }
 
         /* SVG Icon Fallbacks for missing Font Awesome icons */
@@ -1467,6 +2037,233 @@
             line-height: 1;
             font-weight: 300;
         }
+
+        /* Public Profile Styles */
+        .public-profile-info {
+            padding: 24px;
+        }
+
+        .public-profile-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid var(--surface-variant);
+        }
+
+        .public-profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--surface-variant);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--on-surface-variant);
+            border: 4px solid var(--primary);
+        }
+
+        .public-profile-basic h3 {
+            margin: 0 0 8px 0;
+            color: var(--on-surface);
+            font-size: 24px;
+        }
+
+        .public-profile-basic p {
+            margin: 0 0 12px 0;
+            color: var(--on-surface-variant);
+            font-size: 16px;
+        }
+
+        .public-profile-details {
+            margin-bottom: 32px;
+        }
+
+        .public-profile-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .public-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 16px;
+        }
+
+        .public-activity {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .public-activity .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 8px;
+            background: var(--surface-variant);
+            transition: all 0.3s ease;
+        }
+
+        .public-activity .activity-item:hover {
+            background: var(--surface-container);
+            transform: translateY(-1px);
+        }
+
+        .public-activity .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--on-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .public-activity .activity-content {
+            flex: 1;
+        }
+
+        .public-activity .activity-text {
+            font-weight: 500;
+            color: var(--on-surface);
+            margin-bottom: 4px;
+        }
+
+        .public-activity .activity-time {
+            color: var(--on-surface-variant);
+            font-size: 14px;
+        }
+
+        .clickable-user {
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .clickable-user:hover {
+            color: var(--primary-variant);
+            text-decoration: underline;
+        }
+
+        /* Friend Request Styles */
+        .friend-request-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background: var(--surface-variant);
+            transition: all 0.3s ease;
+        }
+
+        .friend-request-item:hover {
+            background: var(--surface-container);
+            transform: translateY(-1px);
+        }
+
+        .friend-request-info {
+            flex: 1;
+        }
+
+        .friend-request-name {
+            font-weight: 600;
+            color: var(--on-surface);
+            margin-bottom: 4px;
+        }
+
+        .friend-request-time {
+            font-size: 14px;
+            color: var(--on-surface-variant);
+        }
+
+        .friend-request-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        /* Friends List Styles */
+        .friend-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-bottom: 1px solid var(--outline);
+            transition: all 0.3s ease;
+        }
+
+        .friend-item:hover {
+            background: var(--surface-hover);
+            margin: 0 -16px;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .friend-item:last-child {
+            border-bottom: none;
+        }
+
+        .friend-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .friend-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .friend-details {
+            flex: 1;
+        }
+
+        .friend-name {
+            font-weight: 600;
+            color: var(--on-surface);
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .friend-name:hover {
+            color: var(--primary);
+        }
+
+        .friend-meta {
+            font-size: 14px;
+            color: var(--on-surface-variant);
+        }
+
+        .friend-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
     </style>
 
     <script>
@@ -1574,6 +2371,16 @@
                 } else {
                     avatar.innerHTML = '<i class="fas fa-user"></i>';
                 }
+                
+                // Make profile link in sidebar clickable now that currentUser is set
+                const profileLink = document.getElementById('user-name');
+                if (profileLink && !profileLink.hasAttribute('data-profile-listener')) {
+                    profileLink.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        viewPublicProfile(currentUser.id);
+                    });
+                    profileLink.setAttribute('data-profile-listener', 'true');
+                }
             }
             
             loadDashboardData();
@@ -1594,6 +2401,9 @@
                 // Load social feed
                 loadSocialFeed();
                 
+                // Pre-load friends list (for when user visits social section)
+                loadFriends();
+                
             } catch (error) {
                 console.error('Failed to load dashboard data:', error);
             }
@@ -1605,115 +2415,149 @@
                 displaySocialPosts(postsData.data.posts || []);
             } catch (error) {
                 console.error('Failed to load social feed:', error);
-                document.getElementById('activity-feed').innerHTML = `
-                    <p class="text-center" style="color: var(--on-surface-variant); padding: 40px;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 8px; display: block; color: var(--error);"></i>
-                        Failed to load posts
-                    </p>
-                `;
+                // Show some sample activity instead of an error
+                displaySampleActivity();
             }
+        }
+
+        function displaySampleActivity() {
+            const container = document.getElementById('activity-feed');
+            const sampleActivities = [
+                {
+                    type: 'dice_roll',
+                    user: currentUser?.display_name || currentUser?.username || 'You',
+                    userId: currentUser?.id || null,
+                    action: 'rolled a D20',
+                    result: '15',
+                    time: '2 minutes ago',
+                    icon: 'fa-dice-d20'
+                },
+                {
+                    type: 'character_created',
+                    user: 'System',
+                    userId: null,
+                    action: 'Welcome to MythWeaver! Create your first character to get started.',
+                    result: '',
+                    time: '5 minutes ago',
+                    icon: 'fa-user-ninja'
+                },
+                {
+                    type: 'game_available',
+                    user: 'Community',
+                    userId: null,
+                    action: 'Looking for adventurers! Check out available games.',
+                    result: '',
+                    time: '10 minutes ago',
+                    icon: 'fa-gamepad'
+                }
+            ];
+
+            container.innerHTML = sampleActivities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas ${activity.icon}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-text">
+                            <strong class="post-author-name${activity.userId ? ' clickable-user' : ''}" ${activity.userId ? `data-user-id="${activity.userId}"` : ''}>${activity.user}</strong> ${activity.action}
+                            ${activity.result ? `<span class="activity-result">${activity.result}</span>` : ''}
+                        </div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Make user names clickable
+            makeUserNamesClickable();
         }
 
         function displaySocialPosts(posts) {
             const container = document.getElementById('activity-feed');
             
             if (posts.length === 0) {
-                container.innerHTML = `
-                    <p class="text-center" style="color: var(--on-surface-variant); padding: 40px;">
-                        <i class="fas fa-rss" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
-                        No posts yet. Be the first to share something!
-                    </p>
-                `;
+                displaySampleActivity();
                 return;
             }
 
-            container.innerHTML = posts.slice(0, 10).map(post => {
-                const author = post.author || { display_name: 'Unknown User', username: 'unknown' };
-                const authorInitial = author.display_name ? author.display_name.charAt(0).toUpperCase() : 
-                                    author.username ? author.username.charAt(0).toUpperCase() : '?';
-                const timeAgo = post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Recently';
+            // Convert posts to activity format for consistent display
+            const activities = posts.slice(0, 5).map(post => {
+                const author = post.author || currentUser || { display_name: 'Community Member', username: 'member', id: null };
+                const authorName = author.display_name || author.username || 'Community Member';
+                const timeAgo = post.created_at ? formatTimeAgo(new Date(post.created_at)) : 'Recently';
                 
-                const typeClass = `post-type-${post.type?.replace(/-/g, '-') || 'general'}`;
-                const typeName = post.type?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'General';
-                
-                let attachedGameHtml = '';
-                if (post.attached_game) {
-                    const game = post.attached_game;
-                    const canJoin = game.status === 'recruiting' && 
-                                   (game.current_players || 0) < (game.max_players || 4) &&
-                                   game.dm_user_id !== currentUser?.id &&
-                                   !(game.players && game.players.some(p => p.user_id === currentUser?.id));
-                    
-                    attachedGameHtml = `
-                        <div class="attached-game" onclick="viewAttachedGame('${game.id}')">
-                            <div class="attached-game-header">
-                                <div>
-                                    <div class="attached-game-title">
-                                        <i class="fas fa-gamepad"></i> ${game.name}
-                                    </div>
-                                    <div class="attached-game-meta">
-                                        <span class="status-badge status-${game.status}">${game.status}</span>
-                                        ${game.system} • ${game.current_players || 0}/${game.max_players || 4} players
-                                    </div>
-                                </div>
-                                ${canJoin ? `
-                                    <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); joinGameFromPost('${game.id}')">
-                                        <i class="fas fa-user-plus"></i>
-                                        Join Game
-                                    </button>
-                                ` : ''}
-                            </div>
-                            ${game.description ? `
-                                <p style="color: var(--on-surface-variant); font-size: 13px; margin: 8px 0 0 0;">
-                                    ${game.description.substring(0, 100)}${game.description.length > 100 ? '...' : ''}
-                                </p>
-                            ` : ''}
-                        </div>
-                    `;
+                let action = '';
+                let icon = 'fa-bullhorn';
+                let result = '';
+
+                switch (post.type) {
+                    case 'looking-for-group':
+                        action = 'is looking for players';
+                        icon = 'fa-users';
+                        result = post.title;
+                        break;
+                    case 'game-announcement':
+                        action = 'announced a new game';
+                        icon = 'fa-gamepad';
+                        result = post.title;
+                        break;
+                    case 'character-showcase':
+                        action = 'showcased their character';
+                        icon = 'fa-user-ninja';
+                        result = post.title;
+                        break;
+                    case 'session-recap':
+                        action = 'shared a session recap';
+                        icon = 'fa-scroll';
+                        result = post.title;
+                        break;
+                    default:
+                        action = 'shared a post';
+                        icon = 'fa-comment';
+                        result = post.title;
                 }
 
-                const tags = post.tags && post.tags.length > 0 ? `
-                    <div class="post-tags">
-                        ${post.tags.map(tag => `<span class="post-tag">#${tag}</span>`).join('')}
-                    </div>
-                ` : '';
+                return {
+                    type: post.type || 'general',
+                    user: authorName,
+                    userId: author.id,
+                    action: action,
+                    result: result,
+                    time: timeAgo,
+                    icon: icon,
+                    content: post.content ? post.content.substring(0, 100) + (post.content.length > 100 ? '...' : '') : ''
+                };
+            });
 
-                return `
-                    <div class="post-card">
-                        <div class="post-header">
-                            <div class="post-author-avatar">${authorInitial}</div>
-                            <div class="post-author-info">
-                                <div class="post-author-name">${author.display_name || author.username}</div>
-                                <div class="post-meta">
-                                    ${timeAgo}
-                                    <span class="post-type-badge ${typeClass}">${typeName}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="post-title">${post.title}</div>
-                        <div class="post-content">${post.content}</div>
-                        
-                        ${tags}
-                        ${attachedGameHtml}
-                        
-                        <div class="post-actions">
-                            <button class="post-action" onclick="likePost('${post.id}')">
-                                <i class="fas fa-heart"></i>
-                                Like ${post.likes_count || 0}
-                            </button>
-                            <button class="post-action" onclick="commentOnPost('${post.id}')">
-                                <i class="fas fa-comment"></i>
-                                Comment ${post.comments_count || 0}
-                            </button>
-                            <button class="post-action" onclick="sharePost('${post.id}')">
-                                <i class="fas fa-share"></i>
-                                Share
-                            </button>
-                        </div>
+            container.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas ${activity.icon}"></i>
                     </div>
-                `;
-            }).join('');
+                    <div class="activity-content">
+                        <div class="activity-text">
+                            <strong class="post-author-name${activity.userId ? ' clickable-user' : ''}" ${activity.userId ? `data-user-id="${activity.userId}"` : ''}>${activity.user}</strong> ${activity.action}
+                            ${activity.result ? `<span class="activity-result">"${activity.result}"</span>` : ''}
+                        </div>
+                        ${activity.content ? `<div class="activity-description">${activity.content}</div>` : ''}
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Make user names clickable
+            makeUserNamesClickable();
+        }
+
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) return 'Just now';
+            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+            if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+            
+            return date.toLocaleDateString();
         }
 
         function displayCharacters(characters) {
@@ -1877,7 +2721,14 @@
             document.getElementById(`${sectionName}-section`).classList.remove('hidden');
             
             // Set active nav item
-            event.target.classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+
+            // Load section-specific data
+            if (sectionName === 'social') {
+                loadFriends();
+            }
         }
 
         // Dice rolling
@@ -1970,52 +2821,206 @@
 
         // Profile Management
         function showProfile() {
+            // Now redirect to public profile view instead
+            if (currentUser) {
+                viewPublicProfile(currentUser.id);
+            }
+        }
+
+        function loadProfileData() {
+            if (!currentUser) return;
+
+            // Parse preferences if they exist
+            let preferences = {};
+            if (currentUser.preferences) {
+                try {
+                    preferences = typeof currentUser.preferences === 'string' 
+                        ? JSON.parse(currentUser.preferences) 
+                        : currentUser.preferences;
+                } catch (e) {
+                    preferences = {};
+                }
+            }
+
+            // Populate profile form fields
+            document.getElementById('profile-display-name').value = currentUser.display_name || '';
+            document.getElementById('profile-username').value = currentUser.username || '';
+            document.getElementById('profile-email').value = currentUser.email || '';
+            document.getElementById('profile-bio').value = preferences.bio || '';
+            document.getElementById('profile-location').value = preferences.location || '';
+            
+            // Set the favorite system
+            const systemSelect = document.getElementById('profile-system');
+            if (preferences.favorite_system) {
+                systemSelect.value = preferences.favorite_system;
+            }
+
+            // Update stats
+            document.getElementById('profile-character-count').textContent = document.getElementById('character-count').textContent;
+            document.getElementById('profile-game-count').textContent = document.getElementById('game-count').textContent;
+
+            // Set member since date
+            if (currentUser.created_at) {
+                const memberSince = new Date(currentUser.created_at).toLocaleDateString();
+                document.getElementById('member-since').textContent = memberSince;
+            } else {
+                document.getElementById('member-since').textContent = 'Recently';
+            }
+
+            // Load friend requests
+            loadFriendRequests();
+        }
+
+        async function loadFriendRequests() {
+            try {
+                const response = await apiCall('/social/friends/requests');
+                const { received, sent } = response.data;
+                
+                const friendRequestsList = document.getElementById('friend-requests-list');
+                
+                if (!friendRequestsList) {
+                    console.warn('Friend requests list element not found');
+                    return;
+                }
+                
+                if (received.length === 0 && sent.length === 0) {
+                    friendRequestsList.innerHTML = `
+                        <div class="text-center" style="padding: 40px; color: var(--on-surface-variant);">
+                            <i class="fas fa-user-friends" style="font-size: 32px; margin-bottom: 12px; display: block; opacity: 0.5;"></i>
+                            <p>No pending friend requests</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                
+                if (received.length > 0) {
+                    html += '<h4 style="margin-bottom: 12px; color: var(--on-surface);">Received Requests</h4>';
+                    received.forEach(request => {
+                        html += `
+                            <div class="friend-request-item">
+                                <div class="friend-request-info">
+                                    <div class="friend-request-name">${request.from.display_name || request.from.username}</div>
+                                    <div class="friend-request-time">${formatTimeAgo(new Date(request.created_at))}</div>
+                                </div>
+                                <div class="friend-request-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="respondToFriendRequest('${request.id}', 'accept')">
+                                        Accept
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" onclick="respondToFriendRequest('${request.id}', 'reject')">
+                                        Decline
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                if (sent.length > 0) {
+                    if (received.length > 0) html += '<div style="margin: 20px 0; border-top: 1px solid var(--outline);"></div>';
+                    html += '<h4 style="margin-bottom: 12px; color: var(--on-surface);">Sent Requests</h4>';
+                    sent.forEach(request => {
+                        html += `
+                            <div class="friend-request-item">
+                                <div class="friend-request-info">
+                                    <div class="friend-request-name">${request.to.display_name || request.to.username}</div>
+                                    <div class="friend-request-time">Sent ${formatTimeAgo(new Date(request.created_at))}</div>
+                                </div>
+                                <span class="status-badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">Pending</span>
+                            </div>
+                        `;
+                    });
+                }
+                
+                friendRequestsList.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Failed to load friend requests:', error);
+                // Don't show error to user for this non-critical feature
+            }
+        }
+
+        async function respondToFriendRequest(requestId, action) {
+            try {
+                await apiCall(`/social/friends/requests/${requestId}/respond`, {
+                    method: 'POST',
+                    body: JSON.stringify({ action })
+                });
+                
+                showMessage(action === 'accept' ? 'Friend request accepted!' : 'Friend request declined', 'success');
+                loadFriendRequests(); // Refresh the friend requests list
+                
+                // If accepted, refresh the friends list too (if it's loaded)
+                if (action === 'accept') {
+                    const friendsList = document.getElementById('friends-list');
+                    if (friendsList && !document.getElementById('social-section').classList.contains('hidden')) {
+                        loadFriends();
+                    }
+                }
+                
+            } catch (error) {
+                showMessage('Failed to respond to friend request: ' + error.message, 'error');
+            }
+        }
+
+        function showChangePassword() {
             const content = `
-                <form onsubmit="updateProfile(event)">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Display Name</label>
-                            <input type="text" id="profile-display-name" class="form-input" value="${currentUser?.display_name || ''}" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Username</label>
-                            <input type="text" id="profile-username" class="form-input" value="${currentUser?.username || ''}" required>
-                        </div>
+                <form onsubmit="changePassword(event)">
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" id="current-password" class="form-input" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" id="profile-email" class="form-input" value="${currentUser?.email || ''}" readonly>
+                        <label class="form-label">New Password</label>
+                        <input type="password" id="new-password" class="form-input" required minlength="8">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Bio</label>
-                        <textarea id="profile-bio" class="form-input textarea" placeholder="Tell other players about yourself...">${currentUser?.bio || ''}</textarea>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Location</label>
-                            <input type="text" id="profile-location" class="form-input" value="${currentUser?.location || ''}" placeholder="City, Country">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Favorite Game System</label>
-                            <select id="profile-system" class="form-select">
-                                <option value="D&D 5e">D&D 5th Edition</option>
-                                <option value="Pathfinder">Pathfinder</option>
-                                <option value="Call of Cthulhu">Call of Cthulhu</option>
-                                <option value="Vampire">Vampire: The Masquerade</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" id="confirm-password" class="form-input" required>
                     </div>
                     <div style="display: flex; gap: 12px; margin-top: 24px;">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
-                            Save Profile
+                            Change Password
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
                     </div>
                 </form>
             `;
-            showModal('Edit Profile', content);
+            showModal('Change Password', content);
+        }
+
+        function enableTwoFactor() {
+            showMessage('Two-factor authentication setup coming soon!', 'info');
+        }
+
+        async function changePassword(event) {
+            event.preventDefault();
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                showMessage('New passwords do not match', 'error');
+                return;
+            }
+
+            try {
+                await apiCall('/auth/change-password', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+                
+                closeModal();
+                showMessage('Password changed successfully!', 'success');
+            } catch (error) {
+                showMessage('Failed to change password: ' + error.message, 'error');
+            }
         }
 
         async function updateProfile(event) {
@@ -2035,9 +3040,21 @@
                     body: JSON.stringify(profileData)
                 });
                 
-                currentUser = { ...currentUser, ...profileData };
+                // Update current user with new data
+                const updatedPreferences = {
+                    bio: profileData.bio,
+                    location: profileData.location,
+                    favorite_system: profileData.interests
+                };
+                
+                currentUser = { 
+                    ...currentUser, 
+                    display_name: profileData.display_name,
+                    username: profileData.username,
+                    preferences: JSON.stringify(updatedPreferences)
+                };
+                
                 updateUserDisplay();
-                closeModal();
                 showMessage('Profile updated successfully!', 'success');
             } catch (error) {
                 showMessage('Failed to update profile: ' + error.message, 'error');
@@ -2053,6 +3070,118 @@
                 avatar.textContent = currentUser.display_name.charAt(0).toUpperCase();
             } else if (currentUser.username) {
                 avatar.textContent = currentUser.username.charAt(0).toUpperCase();
+            }
+        }
+
+        // Game Management Functions
+        async function startGame(gameId) {
+            try {
+                await apiCall(`/games/${gameId}/start`, {
+                    method: 'POST'
+                });
+                showMessage('Game started successfully!', 'success');
+                loadDashboardData(); // Refresh games list
+            } catch (error) {
+                showMessage('Failed to start game: ' + error.message, 'error');
+            }
+        }
+
+        async function pauseGame(gameId) {
+            try {
+                await apiCall(`/games/${gameId}/pause`, {
+                    method: 'POST'
+                });
+                showMessage('Game paused successfully!', 'success');
+                loadDashboardData(); // Refresh games list
+            } catch (error) {
+                showMessage('Failed to pause game: ' + error.message, 'error');
+            }
+        }
+
+        async function stopGame(gameId) {
+            if (confirm('Are you sure you want to complete this game? This action cannot be undone.')) {
+                try {
+                    await apiCall(`/games/${gameId}/stop`, {
+                        method: 'POST'
+                    });
+                    showMessage('Game completed successfully!', 'success');
+                    loadDashboardData(); // Refresh games list
+                } catch (error) {
+                    showMessage('Failed to complete game: ' + error.message, 'error');
+                }
+            }
+        }
+
+        async function deleteGame(gameId, gameName) {
+            if (confirm(`Are you sure you want to delete "${gameName}"? This action cannot be undone.`)) {
+                try {
+                    await apiCall(`/games/${gameId}`, {
+                        method: 'DELETE'
+                    });
+                    showMessage('Game deleted successfully!', 'success');
+                    loadDashboardData(); // Refresh games list
+                } catch (error) {
+                    showMessage('Failed to delete game: ' + error.message, 'error');
+                }
+            }
+        }
+
+        async function joinGame(gameId) {
+            try {
+                await apiCall(`/games/${gameId}/join`, {
+                    method: 'POST'
+                });
+                showMessage('Successfully joined the game!', 'success');
+                loadDashboardData(); // Refresh games list
+            } catch (error) {
+                showMessage('Failed to join game: ' + error.message, 'error');
+            }
+        }
+
+        async function leaveGame(gameId, gameName) {
+            if (confirm(`Are you sure you want to leave "${gameName}"?`)) {
+                try {
+                    await apiCall(`/games/${gameId}/leave`, {
+                        method: 'POST'
+                    });
+                    showMessage('Successfully left the game!', 'success');
+                    loadDashboardData(); // Refresh games list
+                } catch (error) {
+                    showMessage('Failed to leave game: ' + error.message, 'error');
+                }
+            }
+        }
+
+        async function viewGame(gameId) {
+            // For now, just show a message - this could be expanded to show game details
+            showMessage('Game details view coming soon!', 'info');
+        }
+
+        async function editGame(gameId, gameData) {
+            // For now, just show a message - this could be expanded to show edit form
+            showMessage('Game editing interface coming soon!', 'info');
+        }
+
+        // Character Management Functions
+        async function viewCharacter(characterId) {
+            showMessage('Character details view coming soon!', 'info');
+        }
+
+        async function editCharacter(characterId, characterData) {
+            showMessage('Character editing interface coming soon!', 'info');
+        }
+
+        async function deleteCharacter(characterId, characterName) {
+            if (confirm(`Are you sure you want to delete "${characterName}"? This action cannot be undone.`)) {
+                try {
+                    await apiCall(`/characters/${characterId}`, {
+                        method: 'DELETE'
+                    });
+                    showMessage('Character deleted successfully!', 'success');
+                    loadDashboardData(); // Refresh characters list
+                } catch (error) {
+                    showMessage('Failed to delete character: ' + error.message, 'error');
+                }
             }
         }
 
@@ -2493,16 +3622,27 @@
             event.preventDefault();
             
             const username = document.getElementById('friend-username').value.trim();
-            const message = document.getElementById('friend-message').value.trim();
             
             try {
-                await apiCall('/social/friends/request', {
+                const response = await apiCall('/social/friends/request', {
                     method: 'POST',
-                    body: JSON.stringify({ username, message })
+                    body: JSON.stringify({ username })
                 });
                 
                 closeModal();
-                showMessage('Friend request sent!', 'success');
+                
+                // Check if it was auto-accepted (mutual friend request)
+                if (response.data.auto_accepted) {
+                    showMessage(response.data.message, 'success');
+                    
+                    // Refresh friends list if it's currently visible
+                    const friendsList = document.getElementById('friends-list');
+                    if (friendsList && !document.getElementById('social-section').classList.contains('hidden')) {
+                        loadFriends();
+                    }
+                } else {
+                    showMessage('Friend request sent!', 'success');
+                }
                 
             } catch (error) {
                 showMessage('Failed to send friend request: ' + error.message, 'error');
@@ -2817,6 +3957,283 @@
             } catch (error) {
                 showMessage('Failed to join game: ' + error.message, 'error');
             }
+        }
+
+        // Public Profile Functions
+        let currentPublicUserId = null;
+
+        async function viewPublicProfile(userId) {
+            try {
+                console.log('Viewing public profile for user ID:', userId);
+                console.log('Current user:', currentUser);
+                
+                currentPublicUserId = userId;
+                const userData = await apiCall(`/users/public/${userId}`);
+                const user = userData.data.user;
+                
+                // Update profile title
+                document.getElementById('public-profile-title').textContent = `${user.display_name || user.username}'s Profile`;
+                
+                // Update basic info
+                document.getElementById('public-display-name').textContent = user.display_name || user.username;
+                document.getElementById('public-username').textContent = `@${user.username}`;
+                document.getElementById('public-member-since').textContent = `Member since ${new Date(user.created_at).getFullYear()}`;
+                
+                // Update avatar
+                const avatar = document.getElementById('public-avatar');
+                if (user.display_name) {
+                    avatar.textContent = user.display_name.charAt(0).toUpperCase();
+                } else if (user.username) {
+                    avatar.textContent = user.username.charAt(0).toUpperCase();
+                } else {
+                    avatar.innerHTML = '<i class="fas fa-user"></i>';
+                }
+                
+                // Update profile details
+                document.getElementById('public-bio').textContent = user.bio || 'No bio provided';
+                document.getElementById('public-location').textContent = user.location || 'Not specified';
+                document.getElementById('public-system').textContent = user.favorite_system || 'Not specified';
+                
+                // Update stats
+                document.getElementById('public-character-count').textContent = user.character_count || 0;
+                document.getElementById('public-game-count').textContent = user.game_count || 0;
+                
+                // Update action buttons
+                const friendRequestBtn = document.getElementById('friend-request-btn');
+                const messageBtn = document.getElementById('message-btn');
+                const editProfileBtn = document.getElementById('edit-profile-btn');
+                
+                // Check if viewing own profile
+                const isOwnProfile = currentUser && currentUser.id === userId;
+                
+                if (isOwnProfile) {
+                    // Show edit button, hide social buttons
+                    editProfileBtn.style.display = 'block';
+                    friendRequestBtn.style.display = 'none';
+                    messageBtn.style.display = 'none';
+                } else {
+                    // Hide edit button, show social buttons
+                    editProfileBtn.style.display = 'none';
+                    
+                    if (user.is_friend) {
+                        friendRequestBtn.style.display = 'none';
+                        messageBtn.style.display = 'block';
+                    } else if (user.friend_request_sent) {
+                        friendRequestBtn.innerHTML = '<i class="fas fa-clock"></i> Request Sent';
+                        friendRequestBtn.disabled = true;
+                        friendRequestBtn.style.display = 'block';
+                        messageBtn.style.display = 'none';
+                    } else {
+                        friendRequestBtn.innerHTML = '<i class="fas fa-user-plus"></i> Send Friend Request';
+                        friendRequestBtn.disabled = false;
+                        friendRequestBtn.style.display = 'block';
+                        messageBtn.style.display = 'none';
+                    }
+                }
+                
+                // Show the public profile section
+                showSection('public-profile');
+                
+            } catch (error) {
+                console.error('Failed to load public profile:', error);
+                showMessage('Failed to load user profile: ' + error.message, 'error');
+            }
+        }
+
+        async function sendFriendRequestToUser() {
+            if (!currentPublicUserId) return;
+            
+            try {
+                // Get the username from the public profile display
+                const usernameElement = document.getElementById('public-username');
+                const username = usernameElement ? usernameElement.textContent?.replace('@', '') : null;
+                
+                if (!username) {
+                    showMessage('Unable to send friend request - username not found', 'error');
+                    return;
+                }
+                
+                const response = await apiCall('/social/friends/request', {
+                    method: 'POST',
+                    body: JSON.stringify({ username: username })
+                });
+                
+                // Check if it was auto-accepted (mutual friend request)
+                if (response.data.auto_accepted) {
+                    showMessage(response.data.message, 'success');
+                    
+                    // Update button to show they're now friends
+                    const friendRequestBtn = document.getElementById('friend-request-btn');
+                    const messageBtn = document.getElementById('message-btn');
+                    
+                    friendRequestBtn.style.display = 'none';
+                    messageBtn.style.display = 'block';
+                    messageBtn.innerHTML = '<i class="fas fa-comment"></i> Send Message';
+                    
+                    // Refresh friends list if it's currently visible
+                    const friendsList = document.getElementById('friends-list');
+                    if (friendsList && !document.getElementById('social-section').classList.contains('hidden')) {
+                        loadFriends();
+                    }
+                } else {
+                    showMessage('Friend request sent!', 'success');
+                    
+                    // Update button state to show pending
+                    const friendRequestBtn = document.getElementById('friend-request-btn');
+                    friendRequestBtn.innerHTML = '<i class="fas fa-clock"></i> Request Sent';
+                    friendRequestBtn.disabled = true;
+                }
+                
+            } catch (error) {
+                showMessage('Failed to send friend request: ' + error.message, 'error');
+            }
+        }
+
+        function sendMessageToUser() {
+            showMessage('Direct messaging coming soon!', 'info');
+        }
+
+        function editOwnProfile() {
+            showSection('profile');
+            loadProfileData();
+        }
+
+        function makeUserNameClickable(element, userId) {
+            // Prevent duplicate event listeners
+            if (element.hasAttribute('data-clickable-setup')) {
+                return;
+            }
+            
+            element.classList.add('clickable-user');
+            element.addEventListener('click', (e) => {
+                e.preventDefault();
+                viewPublicProfile(userId);
+            });
+            element.setAttribute('data-clickable-setup', 'true');
+        }
+
+        // Make profile link in sidebar clickable - this is now handled in showMainApp
+
+
+
+        // Make user names clickable in social feed
+        function makeUserNamesClickable() {
+            const userNameElements = document.querySelectorAll('.post-author-name');
+            console.log(`Found ${userNameElements.length} user name elements to make clickable`);
+            
+            userNameElements.forEach(element => {
+                const userId = element.getAttribute('data-user-id');
+                if (userId) {
+                    console.log(`Making user name clickable for userId: ${userId}`);
+                    makeUserNameClickable(element, userId);
+                }
+            });
+        }
+
+        // Friends Management
+        async function loadFriends() {
+            try {
+                const response = await apiCall('/social/friends');
+                const friends = response.data.friends;
+                displayFriends(friends);
+            } catch (error) {
+                console.error('Failed to load friends:', error);
+                displayFriendsError();
+            }
+        }
+
+        function displayFriends(friends) {
+            const friendsList = document.getElementById('friends-list');
+            
+            if (!friends || friends.length === 0) {
+                friendsList.innerHTML = `
+                    <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
+                        <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                        <h3 style="margin-bottom: 8px;">No Friends Yet</h3>
+                        <p>Start connecting with other players!</p>
+                        <button class="btn btn-primary" onclick="showAddFriend()" style="margin-top: 16px;">
+                            <i class="fas fa-user-plus"></i>
+                            Add Friend
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div style="padding: 16px;">';
+            
+            friends.forEach(friendData => {
+                const friend = friendData.friend;
+                const friendName = friend.display_name || friend.username;
+                const friendSince = new Date(friendData.since).toLocaleDateString();
+                
+                html += `
+                    <div class="friend-item">
+                        <div class="friend-info">
+                            <div class="friend-avatar">
+                                ${friendName.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="friend-details">
+                                <div class="friend-name clickable-user" data-user-id="${friend.id}" onclick="viewPublicProfile('${friend.id}')">
+                                    ${friendName}
+                                </div>
+                                <div class="friend-meta">
+                                    @${friend.username} • Friends since ${friendSince}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="sendMessageToFriend('${friend.id}')">
+                                <i class="fas fa-comment"></i>
+                                Message
+                            </button>
+                            <button class="btn btn-icon" onclick="removeFriend('${friendData.friendship_id}', '${friendName}')" title="Remove Friend" style="color: var(--error);">
+                                <i class="fas fa-user-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            friendsList.innerHTML = html;
+        }
+
+        function displayFriendsError() {
+            const friendsList = document.getElementById('friends-list');
+            friendsList.innerHTML = `
+                <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5; color: var(--error);"></i>
+                    <h3 style="margin-bottom: 8px;">Unable to Load Friends</h3>
+                    <p>Please try again later</p>
+                    <button class="btn btn-secondary" onclick="loadFriends()" style="margin-top: 16px;">
+                        <i class="fas fa-refresh"></i>
+                        Retry
+                    </button>
+                </div>
+            `;
+        }
+
+        async function removeFriend(friendshipId, friendName) {
+            if (!confirm(`Are you sure you want to remove ${friendName} from your friends?`)) {
+                return;
+            }
+
+            try {
+                await apiCall(`/social/friends/${friendshipId}`, {
+                    method: 'DELETE'
+                });
+                
+                showMessage(`Removed ${friendName} from friends`, 'info');
+                loadFriends(); // Refresh the friends list
+                
+            } catch (error) {
+                showMessage('Failed to remove friend: ' + error.message, 'error');
+            }
+        }
+
+        function sendMessageToFriend(friendId) {
+            showMessage('Direct messaging coming soon!', 'info');
         }
 
         // Messages

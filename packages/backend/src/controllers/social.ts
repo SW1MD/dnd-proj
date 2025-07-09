@@ -111,8 +111,32 @@ export const socialController = {
           res.status(400).json({ success: false, error: { message: 'You are already friends.', statusCode: 400 } });
           return;
         } else if (status === 'pending') {
-          res.status(400).json({ success: false, error: { message: 'Friend request already sent.', statusCode: 400 } });
-          return;
+          // Check who sent the original request
+          if (existingFriendship.requester_id === requesterId) {
+            // Current user already sent a request
+            res.status(400).json({ success: false, error: { message: 'Friend request already sent.', statusCode: 400 } });
+            return;
+          } else {
+            // Target user sent a request to current user - AUTO ACCEPT!
+            await db('friendships')
+              .where('id', existingFriendship.id)
+              .update({ 
+                status: 'accepted',
+                updated_at: new Date()
+              });
+
+            logger.info(`Mutual friend request auto-accepted: ${req.user.username} <-> ${username}`);
+
+            res.status(200).json({
+              success: true,
+              data: { 
+                message: `You and ${targetUser.display_name || targetUser.username} are now friends! 🎉`,
+                friendship_id: existingFriendship.id,
+                auto_accepted: true
+              }
+            });
+            return;
+          }
         }
       }
 
