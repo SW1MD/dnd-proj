@@ -33,8 +33,23 @@ async function startServer() {
       },
     });
     
-    // Security middleware
-    app.use(helmet());
+    // Security middleware - configured for development
+    app.use(helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'"],
+          scriptSrcAttr: ["'unsafe-inline'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", "data:", "https:"],
+          connectSrc: ["'self'"],
+          fontSrc: ["'self'"],
+          objectSrc: ["'none'"],
+          mediaSrc: ["'self'"],
+          frameSrc: ["'none'"],
+        },
+      },
+    }));
     app.use(cors({
       origin: config.corsOrigin,
       credentials: true,
@@ -65,6 +80,19 @@ async function startServer() {
     
     // Serve static files
     app.use('/uploads', express.static(uploadDir));
+    
+    // Serve frontend at root path
+    app.get('/', (req, res) => {
+      const frontendPath = path.join(__dirname, '../../desktop/index.html');
+      if (fs.existsSync(frontendPath)) {
+        res.sendFile(frontendPath);
+      } else {
+        res.status(404).json({ 
+          error: 'Frontend not found',
+          message: 'The test frontend is not available. Please check the desktop package.',
+        });
+      }
+    });
     
     // Health check endpoint
     app.get('/health', (req, res) => {

@@ -9,6 +9,8 @@ const users_1 = __importDefault(require("./users"));
 const characters_1 = __importDefault(require("./characters"));
 const games_1 = __importDefault(require("./games"));
 const maps_1 = __importDefault(require("./maps"));
+const social_1 = __importDefault(require("./social"));
+const dice_1 = __importDefault(require("./dice"));
 const errorHandler_1 = require("../middleware/errorHandler");
 function setupRoutes(app) {
     const apiVersion = '/api/v1';
@@ -17,6 +19,8 @@ function setupRoutes(app) {
     app.use(`${apiVersion}/characters`, characters_1.default);
     app.use(`${apiVersion}/games`, games_1.default);
     app.use(`${apiVersion}/maps`, maps_1.default);
+    app.use(`${apiVersion}/social`, social_1.default);
+    app.use(`${apiVersion}/dice`, dice_1.default);
     app.use('*', errorHandler_1.notFoundHandler);
 }
 exports.default = setupRoutes;

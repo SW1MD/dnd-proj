@@ -54,8 +54,15 @@ async function initializeDatabase() {
         await db.migrate.latest();
         logger_1.logger.info('✅ Database migrations completed');
         if (config_1.config.nodeEnv === 'development') {
-            await db.seed.run();
-            logger_1.logger.info('✅ Database seeded successfully');
+            const userCount = await db('users').count('id as count').first();
+            const hasUsers = userCount && parseInt(userCount['count']) > 0;
+            if (!hasUsers) {
+                await db.seed.run();
+                logger_1.logger.info('✅ Database seeded successfully');
+            }
+            else {
+                logger_1.logger.info('✅ Database already has data, skipping seeds');
+            }
         }
     }
     catch (error) {

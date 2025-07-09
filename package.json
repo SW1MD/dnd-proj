@@ -7,22 +7,25 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "yarn workspaces run build",
-    "start": "npm run build --workspace=packages/backend && npm start --workspace=packages/backend",
-    "dev": "concurrently \"yarn workspace @dnd/backend dev\" \"yarn workspace @dnd/desktop dev\"",
-    "dev:backend": "yarn workspace @dnd/backend dev",
-    "dev:desktop": "yarn workspace @dnd/desktop dev",
-    "dev:mobile": "yarn workspace @dnd/mobile dev",
-    "install:all": "yarn install && yarn workspace @dnd/mobile install",
-    "clean": "yarn workspaces run clean",
-    "test": "yarn workspaces run test"
+    "build": "npm run build --workspace=packages/backend",
+    "build:all": "npm run build --workspaces",
+    "start": "run-s build start:backend",
+    "start:backend": "npm start --workspace=packages/backend",
+    "dev": "concurrently \"npm run dev --workspace=packages/backend\" \"npm run dev --workspace=packages/desktop\"",
+    "dev:backend": "npm run dev --workspace=packages/backend",
+    "dev:desktop": "npm run dev --workspace=packages/desktop",
+    "dev:mobile": "npm run dev --workspace=packages/mobile",
+    "install:all": "npm install",
+    "clean": "npm run clean --workspaces",
+    "test": "npm run test --workspaces"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
+    "npm-run-all": "^4.1.5",
     "typescript": "^5.3.3",
     "@types/node": "^20.10.0"
   },
   "engines": {
     "node": ">=18.0.0"
   }
-} 
+}

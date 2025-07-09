@@ -30,7 +30,8 @@ async function authenticate(req, res, next) {
         const tokenRecord = await db('auth_tokens')
             .where('token', token)
             .where('user_id', decoded.userId)
-            .where('is_active', true)
+            .where('type', 'access')
+            .where('is_revoked', false)
             .where('expires_at', '>', new Date())
             .first();
         if (!tokenRecord) {
@@ -52,16 +53,6 @@ async function authenticate(req, res, next) {
                 success: false,
                 error: {
                     message: 'User not found.',
-                    statusCode: 401,
-                },
-            });
-            return;
-        }
-        if (!user.is_verified) {
-            res.status(401).json({
-                success: false,
-                error: {
-                    message: 'Please verify your email address.',
                     statusCode: 401,
                 },
             });

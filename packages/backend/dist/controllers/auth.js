@@ -160,15 +160,24 @@ exports.authController = {
             const accessToken = jsonwebtoken_1.default.sign({ userId: user.id, email: user.email, role: user.role }, config_1.config.jwt.secret, { expiresIn: config_1.config.jwt.expiresIn });
             const refreshToken = jsonwebtoken_1.default.sign({ userId: user.id, type: 'refresh' }, config_1.config.jwt.secret, { expiresIn: config_1.config.jwt.refreshExpiresIn });
             const tokenId = (0, uuid_1.v4)();
+            const refreshTokenId = (0, uuid_1.v4)();
             const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+            const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
             await db('auth_tokens').insert({
                 id: tokenId,
                 user_id: user.id,
                 token: accessToken,
-                refresh_token: refreshToken,
-                token_type: 'access',
+                type: 'access',
                 expires_at: expiresAt,
-                is_active: true,
+                is_revoked: false,
+            });
+            await db('auth_tokens').insert({
+                id: refreshTokenId,
+                user_id: user.id,
+                token: refreshToken,
+                type: 'refresh',
+                expires_at: refreshExpiresAt,
+                is_revoked: false,
             });
             await db('users')
                 .where('id', user.id)
@@ -231,9 +240,10 @@ exports.authController = {
             }
             const db = (0, database_1.getDatabase)();
             const tokenRecord = await db('auth_tokens')
-                .where('refresh_token', refresh_token)
+                .where('token', refresh_token)
                 .where('user_id', decoded.userId)
-                .where('is_active', true)
+                .where('type', 'refresh')
+                .where('is_revoked', false)
                 .first();
             if (!tokenRecord) {
                 res.status(401).json({
@@ -322,7 +332,7 @@ exports.authController = {
             await db('auth_tokens')
                 .where('token', token)
                 .where('user_id', req.user.id)
-                .update({ is_active: false });
+                .update({ is_revoked: true });
             await db('users')
                 .where('id', req.user.id)
                 .update({ is_online: false });

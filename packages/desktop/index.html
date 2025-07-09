@@ -1,0 +1,2837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYTHWEAVER - AI-Powered Tabletop Gaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Fallback for Font Awesome -->
+    <script>
+        // Check if Font Awesome loaded, if not, load from another CDN
+        setTimeout(() => {
+            if (!window.FontAwesome && !document.querySelector('.fa')) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'https://use.fontawesome.com/releases/v6.5.1/css/all.css';
+                document.head.appendChild(link);
+            }
+        }, 1000);
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --primary-light: #a78bfa;
+            --menu-active: #a855f7;
+            --menu-hover: #1f2937;
+            --surface: #111827;
+            --surface-variant: #0a0a0a;
+            --surface-hover: #1f2937;
+            --surface-card: #1a1a1a;
+            --outline: #374151;
+            --outline-variant: #4b5563;
+            --on-surface: #f9fafb;
+            --on-surface-variant: #d1d5db;
+            --success: #10b981;
+            --info: #8b5cf6;
+            --error: #ef4444;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --shadow-light: rgba(0, 0, 0, 0.25);
+            --shadow-purple: rgba(139, 92, 246, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--surface-variant);
+            color: var(--on-surface);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--outline);
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--outline);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .nav-menu {
+            padding: 16px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 20px;
+            color: var(--on-surface-variant);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--menu-hover);
+            color: var(--menu-active);
+        }
+
+        .nav-item.active {
+            background: var(--surface-hover);
+            color: var(--menu-active);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-profile {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 20px;
+            border-top: 1px solid var(--outline);
+            background: var(--surface);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-details p {
+            font-size: 12px;
+            color: var(--on-surface-variant);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 24px;
+            max-width: calc(100vw - 280px);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: var(--on-surface-variant);
+            font-size: 14px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface-card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+            border: 1px solid var(--outline);
+            box-shadow: 0 4px 6px var(--shadow-light);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--surface-variant);
+            color: var(--on-surface);
+            border: 1px solid var(--outline);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-hover);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--on-surface);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--surface-hover);
+            color: var(--on-surface);
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            font-size: 14px;
+            background: var(--surface-hover);
+            color: var(--on-surface);
+        }
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* Dice Specific */
+        .dice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .dice-btn {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            border: 2px solid var(--outline);
+            border-radius: 12px;
+            background: var(--surface-card);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--on-surface-variant);
+        }
+
+        .dice-btn:hover {
+            border-color: var(--primary);
+            background: var(--surface-hover);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-purple);
+        }
+
+        .dice-btn i {
+            font-size: 20px;
+        }
+
+        /* Character/Game Items */
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            background: var(--surface-card);
+            transition: all 0.2s ease;
+        }
+
+        .item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px var(--shadow-purple);
+            transform: translateY(-1px);
+        }
+
+        .item-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .item-subtitle {
+            font-size: 13px;
+            color: var(--on-surface-variant);
+        }
+
+        /* Authentication */
+        .auth-container {
+            max-width: 400px;
+            margin: 80px auto;
+            padding: 40px;
+            background: var(--surface-card);
+            border-radius: 16px;
+            border: 1px solid var(--outline);
+            box-shadow: 0 8px 32px var(--shadow);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            color: var(--on-surface-variant);
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+        }
+
+        .auth-toggle a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-success {
+            color: var(--success);
+        }
+
+        .text-error {
+            color: var(--error);
+        }
+
+        .mb-0 { margin-bottom: 0; }
+        .mb-1 { margin-bottom: 8px; }
+        .mb-2 { margin-bottom: 16px; }
+        .mb-3 { margin-bottom: 24px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                max-width: 100vw;
+            }
+
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Messages/Notifications */
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: rgba(52, 168, 83, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(52, 168, 83, 0.2);
+        }
+
+        .message.error {
+            background: rgba(234, 67, 53, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(234, 67, 53, 0.2);
+        }
+
+        .message.info {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Screen -->
+    <div id="auth-screen">
+        <div class="auth-container">
+            <div class="auth-header">
+                <div class="logo">
+                    <i class="fas fa-dice-d20"></i>
+                    Mythweaver
+                </div>
+                <h1 class="auth-title">Welcome Back</h1>
+                <p class="auth-subtitle">Sign in to continue your adventure</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email" class="form-label">Email or Username</label>
+                    <input type="text" id="login-email" class="form-input" placeholder="Enter your email or username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password" class="form-label">Password</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+            </form>
+
+            <div class="auth-toggle">
+                Don't have an account? <a href="#" onclick="showRegister()">Create one</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="main-app" class="hidden">
+        <div class="app-container">
+            <!-- Sidebar -->
+            <nav class="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo">
+                        <i class="fas fa-dice-d20"></i>
+                        Mythweaver
+                    </div>
+                </div>
+
+                <div class="nav-menu">
+                    <button class="nav-item active" onclick="showSection('feed')">
+                        <i class="fas fa-home"></i>
+                        Home Feed
+                    </button>
+                    <button class="nav-item" onclick="showSection('characters')">
+                        <i class="fas fa-user-ninja"></i>
+                        Characters
+                    </button>
+                    <button class="nav-item" onclick="showSection('games')">
+                        <i class="fas fa-gamepad"></i>
+                        Games
+                    </button>
+                    <button class="nav-item" onclick="showSection('dice')">
+                        <i class="fas fa-dice"></i>
+                        Dice Roller
+                    </button>
+                    <button class="nav-item" onclick="showSection('social')">
+                        <i class="fas fa-users"></i>
+                        Friends
+                    </button>
+                    <button class="nav-item" onclick="showSection('messages')">
+                        <i class="fas fa-comments"></i>
+                        Messages
+                    </button>
+                </div>
+
+                <div class="user-profile">
+                    <div class="user-info" onclick="showProfile()" style="cursor: pointer;">
+                        <div class="user-avatar" id="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-details">
+                            <h4 id="user-name">Loading...</h4>
+                            <p id="user-email">user@example.com</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="logout()" style="width: 100%; margin-top: 12px; font-size: 13px;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sign Out
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Home Feed -->
+                <div id="feed-section" class="content-section">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="page-title">Home Feed</h1>
+                            <p class="page-subtitle">Stay up to date with your gaming community</p>
+                        </div>
+                        <button class="btn-plus" onclick="showCreatePost()" title="Create Post"></button>
+                    </div>
+
+                    <div class="grid grid-2">
+                        <div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-bullhorn"></i>
+                                        Recent Activity
+                                    </h3>
+                                </div>
+                                <div id="activity-feed">
+                                    <p class="text-center" style="color: var(--on-surface-variant); padding: 40px;">
+                                        <i class="fas fa-rss" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+                                        Loading posts...
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-chart-line"></i>
+                                        Quick Stats
+                                    </h3>
+                                </div>
+                                <div class="grid grid-2" style="gap: 12px;">
+                                    <div class="text-center" style="padding: 16px; background: var(--surface-variant); border-radius: 8px;">
+                                        <div style="font-size: 24px; font-weight: 600; color: var(--primary);" id="character-count">0</div>
+                                        <div style="font-size: 12px; color: var(--on-surface-variant);">Characters</div>
+                                    </div>
+                                    <div class="text-center" style="padding: 16px; background: var(--surface-variant); border-radius: 8px;">
+                                        <div style="font-size: 24px; font-weight: 600; color: var(--success);" id="game-count">0</div>
+                                        <div style="font-size: 12px; color: var(--on-surface-variant);">Games</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-dice"></i>
+                                        Quick Roll
+                                    </h3>
+                                </div>
+                                <div class="dice-grid" style="grid-template-columns: repeat(4, 1fr);">
+                                    <button class="dice-btn" onclick="quickRoll(20)">
+                                        <i class="fas fa-dice-d20"></i>
+                                        D20
+                                    </button>
+                                    <button class="dice-btn" onclick="quickRoll(12)">
+                                        <i class="fas fa-dice-d12"></i>
+                                        D12
+                                    </button>
+                                    <button class="dice-btn" onclick="quickRoll(10)">
+                                        <i class="fas fa-dice-d10"></i>
+                                        D10
+                                    </button>
+                                    <button class="dice-btn" onclick="quickRoll(6)">
+                                        <i class="fas fa-dice-six"></i>
+                                        D6
+                                    </button>
+                                </div>
+                                <div id="quick-roll-result" class="text-center" style="color: var(--on-surface-variant); font-size: 14px;">
+                                    Roll some dice!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Characters Section -->
+                <div id="characters-section" class="content-section hidden">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="page-title">My Characters</h1>
+                            <p class="page-subtitle">Manage your D&D characters</p>
+                        </div>
+                        <button class="btn-plus" onclick="showCreateCharacter()" title="New Character"></button>
+                    </div>
+
+                    <div id="characters-list" class="item-list">
+                        <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
+                            <i class="fas fa-user-ninja" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                            <h3 style="margin-bottom: 8px;">No Characters Yet</h3>
+                            <p>Create your first character to get started!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Games Section -->
+                <div id="games-section" class="content-section hidden">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="page-title">My Games</h1>
+                            <p class="page-subtitle">Join or create D&D campaigns</p>
+                        </div>
+                        <button class="btn-plus" onclick="showCreateGame()" title="New Game"></button>
+                    </div>
+
+                    <div id="games-list" class="item-list">
+                        <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
+                            <i class="fas fa-gamepad" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                            <h3 style="margin-bottom: 8px;">No Games Yet</h3>
+                            <p>Create or join your first campaign!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dice Section -->
+                <div id="dice-section" class="content-section hidden">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="page-title">Dice Roller</h1>
+                            <p class="page-subtitle">Roll dice for your adventures</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-2">
+                        <div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-dice"></i>
+                                        Standard Dice
+                                    </h3>
+                                </div>
+                                <div class="dice-grid">
+                                    <button class="dice-btn" onclick="rollDice(4)">
+                                        <i class="fas fa-dice-d4"></i>
+                                        D4
+                                    </button>
+                                    <button class="dice-btn" onclick="rollDice(6)">
+                                        <i class="fas fa-dice-six"></i>
+                                        D6
+                                    </button>
+                                    <button class="dice-btn" onclick="rollDice(8)">
+                                        <i class="fas fa-dice-d8"></i>
+                                        D8
+                                    </button>
+                                    <button class="dice-btn" onclick="rollDice(10)">
+                                        <i class="fas fa-dice-d10"></i>
+                                        D10
+                                    </button>
+                                    <button class="dice-btn" onclick="rollDice(12)">
+                                        <i class="fas fa-dice-d12"></i>
+                                        D12
+                                    </button>
+                                    <button class="dice-btn" onclick="rollDice(20)">
+                                        <i class="fas fa-dice-d20"></i>
+                                        D20
+                                    </button>
+                                    <button class="dice-btn" onclick="rollDice(100)">
+                                        <i class="fas fa-percentage"></i>
+                                        D100
+                                    </button>
+                                </div>
+
+                                <div class="grid grid-2" style="margin-top: 20px;">
+                                    <div class="form-group">
+                                        <label class="form-label">Count</label>
+                                        <input type="number" id="dice-count" class="form-input" value="1" min="1" max="20">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Modifier</label>
+                                        <input type="number" id="dice-modifier" class="form-input" value="0" min="-100" max="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-trophy"></i>
+                                        Last Roll
+                                    </h3>
+                                </div>
+                                <div id="dice-result" class="text-center" style="padding: 40px;">
+                                    <div style="font-size: 48px; font-weight: 600; color: var(--primary); margin-bottom: 8px;" id="dice-total">-</div>
+                                    <div style="color: var(--on-surface-variant); font-size: 14px;" id="dice-details">Roll some dice to see results</div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-history"></i>
+                                        Roll History
+                                    </h3>
+                                </div>
+                                <div id="roll-history" style="max-height: 300px; overflow-y: auto;">
+                                    <p class="text-center" style="color: var(--on-surface-variant); padding: 20px;">
+                                        No rolls yet
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Section -->
+                <div id="social-section" class="content-section hidden">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="page-title">Friends</h1>
+                            <p class="page-subtitle">Connect with other players</p>
+                        </div>
+                        <button class="btn-plus" onclick="showAddFriend()" title="Add Friend"></button>
+                    </div>
+
+                    <div class="card">
+                        <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
+                            <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                            <h3 style="margin-bottom: 8px;">No Friends Yet</h3>
+                            <p>Start connecting with other players!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Section -->
+                <div id="messages-section" class="content-section hidden">
+                    <div class="content-header">
+                        <div>
+                            <h1 class="page-title">Messages</h1>
+                            <p class="page-subtitle">Chat with your party</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
+                            <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                            <h3 style="margin-bottom: 8px;">No Messages</h3>
+                            <p>Your conversations will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div id="message-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000; min-width: 300px;"></div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay hidden" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modal-title">Modal Title</h2>
+                <button class="modal-close" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: var(--surface-card);
+            border-radius: 16px;
+            border: 1px solid var(--outline);
+            max-width: 90vw;
+            max-height: 90vh;
+            width: 600px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px var(--shadow);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid var(--outline);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--on-surface);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--on-surface-variant);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--surface-hover);
+            color: var(--on-surface);
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: calc(90vh - 120px);
+            overflow-y: auto;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-section {
+            margin-bottom: 24px;
+        }
+
+        .form-section h3 {
+            margin: 0 0 16px 0;
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .stat-input {
+            text-align: center;
+        }
+
+        .textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid var(--outline);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: var(--surface-hover);
+        }
+
+        .checkbox-item.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .game-card {
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: var(--surface-card);
+            transition: all 0.2s ease;
+        }
+
+        .game-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px var(--shadow-purple);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .game-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .game-meta {
+            font-size: 13px;
+            color: var(--on-surface-variant);
+        }
+
+        .game-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: 1px solid var(--outline);
+            background: transparent;
+            color: var(--on-surface-variant);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            background: var(--surface-hover);
+            color: var(--primary);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .status-recruiting { background: rgba(139, 92, 246, 0.2); color: var(--primary); }
+        .status-paused { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .status-completed { background: rgba(107, 114, 128, 0.2); color: var(--on-surface-variant); }
+
+        /* Social Feed Styles */
+        .post-card {
+            background: var(--surface-card);
+            border: 1px solid var(--outline);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .post-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px var(--shadow-purple);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .post-author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .post-author-info {
+            flex: 1;
+        }
+
+        .post-author-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--on-surface);
+        }
+
+        .post-meta {
+            font-size: 12px;
+            color: var(--on-surface-variant);
+        }
+
+        .post-type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+
+        .post-type-general { background: rgba(107, 114, 128, 0.2); color: var(--on-surface-variant); }
+        .post-type-looking-for-group { background: rgba(139, 92, 246, 0.2); color: var(--primary); }
+        .post-type-game-announcement { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .post-type-character-showcase { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .post-type-session-recap { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .post-type-game-recruitment { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+
+        .post-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--on-surface);
+            margin-bottom: 8px;
+        }
+
+        .post-content {
+            color: var(--on-surface-variant);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .post-tag {
+            background: var(--surface-hover);
+            color: var(--on-surface-variant);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .attached-game {
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+            background: var(--surface-hover);
+            transition: all 0.2s ease;
+        }
+
+        .attached-game:hover {
+            border-color: var(--primary);
+            background: var(--surface-card);
+        }
+
+        .attached-game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .attached-game-title {
+            font-weight: 600;
+            color: var(--on-surface);
+            margin-bottom: 4px;
+        }
+
+        .attached-game-meta {
+            font-size: 13px;
+            color: var(--on-surface-variant);
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--outline);
+        }
+
+        .post-action {
+            background: none;
+            border: none;
+            color: var(--on-surface-variant);
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .post-action:hover {
+            background: var(--surface-hover);
+            color: var(--primary);
+        }
+
+        /* SVG Icon Fallbacks for missing Font Awesome icons */
+        .fa-dice-d20::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M12 2L22 8.5V15.5L12 22L2 15.5V8.5L12 2ZM12 4.3L4 9.5V14.5L12 19.7L20 14.5V9.5L12 4.3Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-user-ninja::before, .fa-user::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-gamepad::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M7 6C5.9 6 5 6.9 5 8V16C5 17.1 5.9 18 7 18H17C18.1 18 19 17.1 19 16V8C19 6.9 18.1 6 17 6H7ZM8 15V13H6V11H8V9H10V11H12V13H10V15H8ZM15.5 14C14.67 14 14 13.33 14 12.5S14.67 11 15.5 11 17 11.67 17 12.5 16.33 14 15.5 14ZM15.5 10C14.67 10 14 9.33 14 8.5S14.67 7 15.5 7 17 7.67 17 8.5 16.33 10 15.5 10Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-dice::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M5 3C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3H5ZM7.5 6C8.33 6 9 6.67 9 7.5S8.33 9 7.5 9 6 8.33 6 7.5 6.67 6 7.5 6ZM16.5 6C17.33 6 18 6.67 18 7.5S17.33 9 16.5 9 15 8.33 15 7.5 15.67 6 16.5 6ZM12 10.5C12.83 10.5 13.5 11.17 13.5 12S12.83 13.5 12 13.5 10.5 12.83 10.5 12 11.17 10.5 12 10.5ZM7.5 15C8.33 15 9 15.67 9 16.5S8.33 18 7.5 18 6 17.33 6 16.5 6.67 15 7.5 15ZM16.5 15C17.33 15 18 15.67 18 16.5S17.33 18 16.5 18 15 17.33 15 16.5 15.67 15 16.5 15Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-users::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M16 4C18.2 4 20 5.8 20 8C20 10.2 18.2 12 16 12C13.8 12 12 10.2 12 8C12 5.8 13.8 4 16 4ZM8 6C9.66 6 11 7.34 11 9C11 10.66 9.66 12 8 12C6.34 12 5 10.66 5 9C5 7.34 6.34 6 8 6ZM8 14C10.67 14 16 15.34 16 18V20H0V18C0 15.34 5.33 14 8 14ZM16 14C16.23 14 16.5 14.01 16.79 14.03C17.84 14.74 18.5 16.24 18.5 18V20H24V18C24 15.34 18.67 14 16 14Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-comments::before, .fa-comment::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M20 2H4C2.9 2 2 2.9 2 4V16C2 17.1 2.9 18 4 18H18L22 22V4C22 2.9 21.1 2 20 2Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-home::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M10 20V14H14V20H19V12H22L12 3L2 12H5V20H10Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-plus::before { content: "+"; }
+        .fa-edit::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-trash::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM19 4H15.5L14.5 3H9.5L8.5 4H5V6H19V4Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-play::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M8 5V19L19 12L8 5Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-pause::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M6 19H10V5H6V19ZM14 5V19H18V5H14Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-stop::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M6 6H18V18H6V6Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-save::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M17 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3ZM12 19C10.34 19 9 17.66 9 16S10.34 13 12 13 15 14.34 15 16 13.66 19 12 19ZM15 9H5V5H15V9Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-sign-out-alt::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M17 7L15.59 8.41L18.17 11H8V13H18.17L15.59 15.58L17 17L22 12L17 7ZM4 5H12V3H4C2.9 3 2 3.9 2 5V19C2 20.1 2.9 21 4 21H12V19H4V5Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-heart::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-share::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M18 16.08C17.24 16.08 16.56 16.38 16.04 16.85L8.91 12.7C8.96 12.47 9 12.24 9 12S8.96 11.53 8.91 11.3L15.96 7.19C16.5 7.69 17.21 8 18 8C19.66 8 21 6.66 21 5S19.66 2 18 2 15 3.34 15 5C15 5.24 15.04 5.47 15.09 5.7L8.04 9.81C7.5 9.31 6.79 9 6 9C4.34 9 3 10.34 3 12S4.34 15 6 15C6.79 15 7.5 14.69 8.04 14.19L15.16 18.34C15.11 18.55 15.08 18.77 15.08 19C15.08 20.61 16.39 21.92 18 21.92S20.92 20.61 20.92 19C20.92 17.39 19.61 16.08 18 16.08Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-user-plus::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M15 12C17.21 12 19 10.21 19 8S17.21 4 15 4 11 5.79 11 8 12.79 12 15 12ZM6 10V7H4V10H1V12H4V15H6V12H9V10H6ZM15 14C12.33 14 7 15.34 7 18V20H23V18C23 15.34 17.67 14 15 14Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-paper-plane::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M2 21L23 12L2 3V10L17 12L2 14V21Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-eye::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M12 4.5C7 4.5 2.73 7.61 1 12C2.73 16.39 7 19.5 12 19.5S21.27 16.39 23 12C21.27 7.61 17 4.5 12 4.5ZM12 17C9.24 17 7 14.76 7 12S9.24 7 12 7 17 9.24 17 12 14.76 17 12 17ZM12 9C10.34 9 9 10.34 9 12S10.34 15 12 15 15 13.66 15 12 13.66 9 12 9Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .fa-sign-in-alt::before { 
+            content: "";
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M10 17L15 12L10 7V10H2V14H10V17ZM20 3H12C10.9 3 10 3.9 10 5V9H12V5H20V19H12V15H10V19C10 20.1 10.9 21 12 21H20C21.1 21 22 20.1 22 19V5C22 3.9 21.1 3 20 3Z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        /* Ensure icons are visible */
+        .fas, .fa {
+            font-family: "Font Awesome 6 Free", "Font Awesome 6 Pro", "Font Awesome 5 Free", "Font Awesome 5 Pro", sans-serif;
+            font-weight: 900;
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            line-height: 1;
+        }
+
+        /* Plus button styling */
+        .btn-plus {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .btn-plus:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px) scale(1.05);
+            box-shadow: 0 4px 12px var(--shadow-purple);
+        }
+
+        .btn-plus::before {
+            content: "+";
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+    </style>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api/v1';
+        let currentUser = null;
+        let authToken = null;
+        let rollHistory = [];
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            authToken = localStorage.getItem('authToken');
+            if (authToken) {
+                fetchUserProfile();
+            }
+
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+        });
+
+        // API helper function
+        async function apiCall(endpoint, options = {}) {
+            const url = `${API_BASE}${endpoint}`;
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(authToken && { 'Authorization': `Bearer ${authToken}` })
+                },
+                ...options
+            };
+
+            try {
+                const response = await fetch(url, config);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error?.message || 'Request failed');
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // Authentication
+        async function handleLogin(e) {
+            e.preventDefault();
+            const emailOrUsername = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const isEmail = emailOrUsername.includes('@');
+            const loginData = isEmail 
+                ? { email: emailOrUsername, password }
+                : { username: emailOrUsername, password };
+
+            try {
+                const data = await apiCall('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify(loginData)
+                });
+
+                authToken = data.data.access_token;
+                localStorage.setItem('authToken', authToken);
+                currentUser = data.data.user;
+                
+                showMainApp();
+                showMessage('Welcome back! 🎉', 'success');
+                
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        async function fetchUserProfile() {
+            try {
+                const data = await apiCall('/users/profile');
+                currentUser = data.data.user;
+                showMainApp();
+            } catch (error) {
+                localStorage.removeItem('authToken');
+                authToken = null;
+                showAuthScreen();
+            }
+        }
+
+        function showAuthScreen() {
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            
+            if (currentUser) {
+                document.getElementById('user-name').textContent = currentUser.display_name || currentUser.username;
+                document.getElementById('user-email').textContent = currentUser.email;
+                
+                // Set avatar
+                const avatar = document.getElementById('user-avatar');
+                if (currentUser.display_name) {
+                    avatar.textContent = currentUser.display_name.charAt(0).toUpperCase();
+                } else if (currentUser.username) {
+                    avatar.textContent = currentUser.username.charAt(0).toUpperCase();
+                } else {
+                    avatar.innerHTML = '<i class="fas fa-user"></i>';
+                }
+            }
+            
+            loadDashboardData();
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Load characters
+                const charactersData = await apiCall('/characters');
+                document.getElementById('character-count').textContent = charactersData.data.characters.length;
+                displayCharacters(charactersData.data.characters);
+                
+                // Load games
+                const gamesData = await apiCall('/games');
+                document.getElementById('game-count').textContent = gamesData.data.games.length;
+                displayGames(gamesData.data.games);
+                
+                // Load social feed
+                loadSocialFeed();
+                
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+            }
+        }
+
+        async function loadSocialFeed() {
+            try {
+                const postsData = await apiCall('/social/posts');
+                displaySocialPosts(postsData.data.posts || []);
+            } catch (error) {
+                console.error('Failed to load social feed:', error);
+                document.getElementById('activity-feed').innerHTML = `
+                    <p class="text-center" style="color: var(--on-surface-variant); padding: 40px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 24px; margin-bottom: 8px; display: block; color: var(--error);"></i>
+                        Failed to load posts
+                    </p>
+                `;
+            }
+        }
+
+        function displaySocialPosts(posts) {
+            const container = document.getElementById('activity-feed');
+            
+            if (posts.length === 0) {
+                container.innerHTML = `
+                    <p class="text-center" style="color: var(--on-surface-variant); padding: 40px;">
+                        <i class="fas fa-rss" style="font-size: 24px; margin-bottom: 8px; display: block;"></i>
+                        No posts yet. Be the first to share something!
+                    </p>
+                `;
+                return;
+            }
+
+            container.innerHTML = posts.slice(0, 10).map(post => {
+                const author = post.author || { display_name: 'Unknown User', username: 'unknown' };
+                const authorInitial = author.display_name ? author.display_name.charAt(0).toUpperCase() : 
+                                    author.username ? author.username.charAt(0).toUpperCase() : '?';
+                const timeAgo = post.created_at ? new Date(post.created_at).toLocaleDateString() : 'Recently';
+                
+                const typeClass = `post-type-${post.type?.replace(/-/g, '-') || 'general'}`;
+                const typeName = post.type?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'General';
+                
+                let attachedGameHtml = '';
+                if (post.attached_game) {
+                    const game = post.attached_game;
+                    const canJoin = game.status === 'recruiting' && 
+                                   (game.current_players || 0) < (game.max_players || 4) &&
+                                   game.dm_user_id !== currentUser?.id &&
+                                   !(game.players && game.players.some(p => p.user_id === currentUser?.id));
+                    
+                    attachedGameHtml = `
+                        <div class="attached-game" onclick="viewAttachedGame('${game.id}')">
+                            <div class="attached-game-header">
+                                <div>
+                                    <div class="attached-game-title">
+                                        <i class="fas fa-gamepad"></i> ${game.name}
+                                    </div>
+                                    <div class="attached-game-meta">
+                                        <span class="status-badge status-${game.status}">${game.status}</span>
+                                        ${game.system} • ${game.current_players || 0}/${game.max_players || 4} players
+                                    </div>
+                                </div>
+                                ${canJoin ? `
+                                    <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); joinGameFromPost('${game.id}')">
+                                        <i class="fas fa-user-plus"></i>
+                                        Join Game
+                                    </button>
+                                ` : ''}
+                            </div>
+                            ${game.description ? `
+                                <p style="color: var(--on-surface-variant); font-size: 13px; margin: 8px 0 0 0;">
+                                    ${game.description.substring(0, 100)}${game.description.length > 100 ? '...' : ''}
+                                </p>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+
+                const tags = post.tags && post.tags.length > 0 ? `
+                    <div class="post-tags">
+                        ${post.tags.map(tag => `<span class="post-tag">#${tag}</span>`).join('')}
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="post-card">
+                        <div class="post-header">
+                            <div class="post-author-avatar">${authorInitial}</div>
+                            <div class="post-author-info">
+                                <div class="post-author-name">${author.display_name || author.username}</div>
+                                <div class="post-meta">
+                                    ${timeAgo}
+                                    <span class="post-type-badge ${typeClass}">${typeName}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="post-title">${post.title}</div>
+                        <div class="post-content">${post.content}</div>
+                        
+                        ${tags}
+                        ${attachedGameHtml}
+                        
+                        <div class="post-actions">
+                            <button class="post-action" onclick="likePost('${post.id}')">
+                                <i class="fas fa-heart"></i>
+                                Like ${post.likes_count || 0}
+                            </button>
+                            <button class="post-action" onclick="commentOnPost('${post.id}')">
+                                <i class="fas fa-comment"></i>
+                                Comment ${post.comments_count || 0}
+                            </button>
+                            <button class="post-action" onclick="sharePost('${post.id}')">
+                                <i class="fas fa-share"></i>
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function displayCharacters(characters) {
+            const container = document.getElementById('characters-list');
+            
+            if (characters.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
+                        <i class="fas fa-user-ninja" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                        <h3 style="margin-bottom: 8px;">No Characters Yet</h3>
+                        <p>Create your first character to get started!</p>
+                        <button class="btn btn-primary" onclick="showCreateCharacter()" style="margin-top: 16px;">
+                            <i class="fas fa-plus"></i>
+                            Create Character
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = characters.map(character => `
+                <div class="item">
+                    <div class="item-icon">
+                        <i class="fas fa-user-ninja"></i>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">${character.name}</div>
+                        <div class="item-subtitle">Level ${character.level} ${character.race} ${character.class}</div>
+                        <div class="item-subtitle">
+                            <strong>STR:</strong> ${character.ability_scores?.strength || 10} 
+                            <strong>DEX:</strong> ${character.ability_scores?.dexterity || 10} 
+                            <strong>CON:</strong> ${character.ability_scores?.constitution || 10}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-icon" onclick="viewCharacter('${character.id}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="editCharacter('${character.id}', ${JSON.stringify(character).replace(/"/g, '&quot;')})" title="Edit Character">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon" onclick="deleteCharacter('${character.id}', '${character.name}')" title="Delete Character" style="color: var(--error);">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayGames(games) {
+            const container = document.getElementById('games-list');
+            
+            if (games.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center" style="padding: 60px; color: var(--on-surface-variant);">
+                        <i class="fas fa-gamepad" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                        <h3 style="margin-bottom: 8px;">No Games Yet</h3>
+                        <p>Create or join your first campaign!</p>
+                        <button class="btn-plus" onclick="showCreateGame()" style="margin-top: 16px;" title="Create Game"></button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = games.map(game => {
+                const isOwner = game.dm_user_id === currentUser?.id;
+                const isPlayer = game.players && game.players.some(p => p.user_id === currentUser?.id);
+                const statusClass = `status-${game.status}`;
+                
+                let actionButtons = '';
+                
+                if (isOwner) {
+                    // Owner actions
+                    actionButtons = `
+                        <button class="btn-icon" onclick="editGame('${game.id}', ${JSON.stringify(game).replace(/"/g, '&quot;')})" title="Edit Game">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        ${game.status === 'recruiting' ? `
+                            <button class="btn-icon" onclick="startGame('${game.id}')" title="Start Game" style="color: var(--success);">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        ` : ''}
+                        ${game.status === 'active' ? `
+                            <button class="btn-icon" onclick="pauseGame('${game.id}')" title="Pause Game" style="color: #f59e0b;">
+                                <i class="fas fa-pause"></i>
+                            </button>
+                            <button class="btn-icon" onclick="stopGame('${game.id}')" title="Complete Game" style="color: var(--error);">
+                                <i class="fas fa-stop"></i>
+                            </button>
+                        ` : ''}
+                        ${game.status === 'paused' ? `
+                            <button class="btn-icon" onclick="startGame('${game.id}')" title="Resume Game" style="color: var(--success);">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        ` : ''}
+                        <button class="btn-icon" onclick="deleteGame('${game.id}', '${game.name}')" title="Delete Game" style="color: var(--error);">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                } else if (isPlayer) {
+                    // Player actions
+                    actionButtons = `
+                        <button class="btn-icon" onclick="viewGame('${game.id}')" title="View Game">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="leaveGame('${game.id}', '${game.name}')" title="Leave Game" style="color: var(--error);">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    `;
+                } else {
+                    // Non-participant actions
+                    actionButtons = `
+                        <button class="btn-icon" onclick="viewGame('${game.id}')" title="View Game">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        ${game.status === 'recruiting' && (game.current_players || 0) < (game.max_players || 4) ? `
+                            <button class="btn-icon" onclick="joinGame('${game.id}')" title="Join Game" style="color: var(--success);">
+                                <i class="fas fa-user-plus"></i>
+                            </button>
+                        ` : ''}
+                    `;
+                }
+
+                return `
+                    <div class="game-card">
+                        <div class="game-header">
+                            <div>
+                                <div class="game-title">${game.name}</div>
+                                <div class="game-meta">
+                                    <span class="status-badge ${statusClass}">${game.status}</span>
+                                    ${game.system} • ${game.current_players || 0}/${game.max_players || 4} players
+                                    ${isOwner ? ' • <strong>You are the DM</strong>' : ''}
+                                    ${isPlayer && !isOwner ? ' • <strong>You are a player</strong>' : ''}
+                                </div>
+                            </div>
+                            <div class="game-actions">
+                                ${actionButtons}
+                            </div>
+                        </div>
+                        <p style="color: var(--on-surface-variant); font-size: 14px; line-height: 1.4; margin: 0;">
+                            ${game.description ? game.description.substring(0, 150) + (game.description.length > 150 ? '...' : '') : 'No description available.'}
+                        </p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(`${sectionName}-section`).classList.remove('hidden');
+            
+            // Set active nav item
+            event.target.classList.add('active');
+        }
+
+        // Dice rolling
+        async function rollDice(faces) {
+            const count = parseInt(document.getElementById('dice-count').value) || 1;
+            const modifier = parseInt(document.getElementById('dice-modifier').value) || 0;
+            
+            try {
+                const data = await apiCall('/dice/roll', {
+                    method: 'POST',
+                    body: JSON.stringify({ sides: faces, count, modifier })
+                });
+
+                displayDiceResult(data.data, `${count}d${faces}${modifier ? ` + ${modifier}` : ''}`);
+                addToRollHistory(data.data, `${count}d${faces}${modifier ? ` + ${modifier}` : ''}`);
+                
+            } catch (error) {
+                showMessage('Failed to roll dice: ' + error.message, 'error');
+            }
+        }
+
+        async function quickRoll(faces) {
+            try {
+                const data = await apiCall('/dice/roll', {
+                    method: 'POST',
+                    body: JSON.stringify({ sides: faces, count: 1, modifier: 0 })
+                });
+
+                document.getElementById('quick-roll-result').innerHTML = `
+                    <strong style="color: var(--primary);">${data.data.total}</strong> (1d${faces})
+                `;
+                
+            } catch (error) {
+                showMessage('Failed to roll dice: ' + error.message, 'error');
+            }
+        }
+
+        function displayDiceResult(result, rollString) {
+            document.getElementById('dice-total').textContent = result.total;
+            document.getElementById('dice-details').textContent = `${rollString}: [${result.rolls.join(', ')}]`;
+        }
+
+        function addToRollHistory(result, rollString) {
+            const rollItem = {
+                result: result.total,
+                details: rollString,
+                rolls: result.rolls,
+                timestamp: new Date().toLocaleTimeString()
+            };
+            
+            rollHistory.unshift(rollItem);
+            if (rollHistory.length > 20) rollHistory.pop();
+            
+            updateRollHistory();
+        }
+
+        function updateRollHistory() {
+            const historyDiv = document.getElementById('roll-history');
+            
+            if (rollHistory.length === 0) {
+                historyDiv.innerHTML = `
+                    <p class="text-center" style="color: var(--on-surface-variant); padding: 20px;">
+                        No rolls yet
+                    </p>
+                `;
+                return;
+            }
+            
+            historyDiv.innerHTML = rollHistory.map(item => `
+                <div style="display: flex; justify-content: between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--outline);">
+                    <div>
+                        <strong style="color: var(--primary);">${item.result}</strong>
+                        <span style="color: var(--on-surface-variant); font-size: 13px; margin-left: 8px;">${item.details}</span>
+                    </div>
+                    <span style="color: var(--on-surface-variant); font-size: 12px;">${item.timestamp}</span>
+                </div>
+            `).join('');
+        }
+
+        // Modal Management
+        function showModal(title, content) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').innerHTML = content;
+            document.getElementById('modal-overlay').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+        }
+
+        // Profile Management
+        function showProfile() {
+            const content = `
+                <form onsubmit="updateProfile(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Display Name</label>
+                            <input type="text" id="profile-display-name" class="form-input" value="${currentUser?.display_name || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" id="profile-username" class="form-input" value="${currentUser?.username || ''}" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="profile-email" class="form-input" value="${currentUser?.email || ''}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bio</label>
+                        <textarea id="profile-bio" class="form-input textarea" placeholder="Tell other players about yourself...">${currentUser?.bio || ''}</textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <input type="text" id="profile-location" class="form-input" value="${currentUser?.location || ''}" placeholder="City, Country">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Favorite Game System</label>
+                            <select id="profile-system" class="form-select">
+                                <option value="D&D 5e">D&D 5th Edition</option>
+                                <option value="Pathfinder">Pathfinder</option>
+                                <option value="Call of Cthulhu">Call of Cthulhu</option>
+                                <option value="Vampire">Vampire: The Masquerade</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Profile
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            `;
+            showModal('Edit Profile', content);
+        }
+
+        async function updateProfile(event) {
+            event.preventDefault();
+            
+            const profileData = {
+                display_name: document.getElementById('profile-display-name').value,
+                username: document.getElementById('profile-username').value,
+                bio: document.getElementById('profile-bio').value,
+                location: document.getElementById('profile-location').value,
+                interests: document.getElementById('profile-system').value
+            };
+
+            try {
+                await apiCall('/users/profile', {
+                    method: 'PUT',
+                    body: JSON.stringify(profileData)
+                });
+                
+                currentUser = { ...currentUser, ...profileData };
+                updateUserDisplay();
+                closeModal();
+                showMessage('Profile updated successfully!', 'success');
+            } catch (error) {
+                showMessage('Failed to update profile: ' + error.message, 'error');
+            }
+        }
+
+        function updateUserDisplay() {
+            document.getElementById('user-name').textContent = currentUser.display_name || currentUser.username;
+            document.getElementById('user-email').textContent = currentUser.email;
+            
+            const avatar = document.getElementById('user-avatar');
+            if (currentUser.display_name) {
+                avatar.textContent = currentUser.display_name.charAt(0).toUpperCase();
+            } else if (currentUser.username) {
+                avatar.textContent = currentUser.username.charAt(0).toUpperCase();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            authToken = null;
+            currentUser = null;
+            showAuthScreen();
+            showMessage('Signed out successfully', 'info');
+        }
+
+        // Character Management
+        function showCreateCharacter() {
+            const content = `
+                <form onsubmit="createCharacter(event)">
+                    <div class="form-section">
+                        <h3>Basic Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Character Name</label>
+                                <input type="text" id="char-name" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Level</label>
+                                <input type="number" id="char-level" class="form-input" value="1" min="1" max="20" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Race</label>
+                                <select id="char-race" class="form-select" required>
+                                    <option value="">Select Race</option>
+                                    <option value="Human">Human</option>
+                                    <option value="Elf">Elf</option>
+                                    <option value="Dwarf">Dwarf</option>
+                                    <option value="Halfling">Halfling</option>
+                                    <option value="Dragonborn">Dragonborn</option>
+                                    <option value="Gnome">Gnome</option>
+                                    <option value="Half-Elf">Half-Elf</option>
+                                    <option value="Half-Orc">Half-Orc</option>
+                                    <option value="Tiefling">Tiefling</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Class</label>
+                                <select id="char-class" class="form-select" required>
+                                    <option value="">Select Class</option>
+                                    <option value="Barbarian">Barbarian</option>
+                                    <option value="Bard">Bard</option>
+                                    <option value="Cleric">Cleric</option>
+                                    <option value="Druid">Druid</option>
+                                    <option value="Fighter">Fighter</option>
+                                    <option value="Monk">Monk</option>
+                                    <option value="Paladin">Paladin</option>
+                                    <option value="Ranger">Ranger</option>
+                                    <option value="Rogue">Rogue</option>
+                                    <option value="Sorcerer">Sorcerer</option>
+                                    <option value="Warlock">Warlock</option>
+                                    <option value="Wizard">Wizard</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Ability Scores</h3>
+                        <div class="stat-grid">
+                            <div class="form-group">
+                                <label class="form-label">Strength</label>
+                                <input type="number" id="char-str" class="form-input stat-input" value="10" min="3" max="20" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Dexterity</label>
+                                <input type="number" id="char-dex" class="form-input stat-input" value="10" min="3" max="20" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Constitution</label>
+                                <input type="number" id="char-con" class="form-input stat-input" value="10" min="3" max="20" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Intelligence</label>
+                                <input type="number" id="char-int" class="form-input stat-input" value="10" min="3" max="20" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Wisdom</label>
+                                <input type="number" id="char-wis" class="form-input stat-input" value="10" min="3" max="20" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Charisma</label>
+                                <input type="number" id="char-cha" class="form-input stat-input" value="10" min="3" max="20" required>
+                            </div>
+                        </div>
+                        <button type="button" onclick="rollStats()" class="btn btn-secondary" style="margin-top: 12px;">
+                            <i class="fas fa-dice"></i>
+                            Roll Stats (4d6 drop lowest)
+                        </button>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Background & Description</h3>
+                        <div class="form-group">
+                            <label class="form-label">Background</label>
+                            <input type="text" id="char-background" class="form-input" placeholder="e.g., Noble, Criminal, Soldier">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Character Description</label>
+                            <textarea id="char-description" class="form-input textarea" placeholder="Describe your character's appearance, personality, and backstory..."></textarea>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Create Character
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            `;
+            showModal('Create New Character', content);
+        }
+
+        async function rollStats() {
+            const statInputs = ['char-str', 'char-dex', 'char-con', 'char-int', 'char-wis', 'char-cha'];
+            
+            for (const inputId of statInputs) {
+                try {
+                    const response = await apiCall('/dice/roll', {
+                        method: 'POST',
+                        body: JSON.stringify({ sides: 6, count: 4, modifier: 0 })
+                    });
+                    
+                    // Drop lowest and sum the top 3
+                    const rolls = response.data.rolls.sort((a, b) => b - a).slice(0, 3);
+                    const total = rolls.reduce((sum, roll) => sum + roll, 0);
+                    
+                    document.getElementById(inputId).value = total;
+                } catch (error) {
+                    console.error('Failed to roll stats:', error);
+                }
+            }
+            showMessage('Stats rolled! (4d6, drop lowest)', 'success');
+        }
+
+        async function createCharacter(event) {
+            event.preventDefault();
+            
+            const characterData = {
+                name: document.getElementById('char-name').value,
+                race: document.getElementById('char-race').value,
+                class: document.getElementById('char-class').value,
+                level: parseInt(document.getElementById('char-level').value),
+                background: document.getElementById('char-background').value,
+                description: document.getElementById('char-description').value,
+                ability_scores: {
+                    strength: parseInt(document.getElementById('char-str').value),
+                    dexterity: parseInt(document.getElementById('char-dex').value),
+                    constitution: parseInt(document.getElementById('char-con').value),
+                    intelligence: parseInt(document.getElementById('char-int').value),
+                    wisdom: parseInt(document.getElementById('char-wis').value),
+                    charisma: parseInt(document.getElementById('char-cha').value)
+                }
+            };
+
+            try {
+                await apiCall('/characters', {
+                    method: 'POST',
+                    body: JSON.stringify(characterData)
+                });
+                
+                closeModal();
+                showMessage('Character created successfully!', 'success');
+                loadDashboardData();
+                
+                // Switch to characters section
+                showSection('characters');
+                
+            } catch (error) {
+                showMessage('Failed to create character: ' + error.message, 'error');
+            }
+        }
+
+        // Game Management
+        function showCreateGame() {
+            const content = `
+                <form onsubmit="createGame(event)">
+                    <div class="form-section">
+                        <h3>Game Information</h3>
+                        <div class="form-group">
+                            <label class="form-label">Game Name</label>
+                            <input type="text" id="game-name" class="form-input" required placeholder="e.g., Dragon Heist Campaign">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Game System</label>
+                                <select id="game-system" class="form-select" required>
+                                    <option value="D&D 5e">D&D 5th Edition</option>
+                                    <option value="Pathfinder">Pathfinder</option>
+                                    <option value="Call of Cthulhu">Call of Cthulhu</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Max Players</label>
+                                <input type="number" id="game-max-players" class="form-input" value="4" min="2" max="8" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Game Description</label>
+                            <textarea id="game-description" class="form-input textarea" required placeholder="Describe your campaign, setting, and what players can expect..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Game Settings</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Difficulty Level</label>
+                                <select id="game-difficulty" class="form-select">
+                                    <option value="Beginner">Beginner Friendly</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Advanced">Advanced</option>
+                                    <option value="Expert">Expert</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Content Rating</label>
+                                <select id="game-rating" class="form-select">
+                                    <option value="Family">Family Friendly</option>
+                                    <option value="Teen">Teen (13+)</option>
+                                    <option value="Mature">Mature (18+)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <input type="checkbox" id="game-recruiting" checked>
+                                Open for new players
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-gamepad"></i>
+                            Create Game
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            `;
+            showModal('Create New Game', content);
+        }
+
+        async function createGame(event) {
+            event.preventDefault();
+            
+            const gameData = {
+                name: document.getElementById('game-name').value,
+                description: document.getElementById('game-description').value,
+                system: document.getElementById('game-system').value,
+                max_players: parseInt(document.getElementById('game-max-players').value),
+                difficulty: document.getElementById('game-difficulty').value,
+                content_rating: document.getElementById('game-rating').value,
+                is_recruiting: document.getElementById('game-recruiting').checked,
+                status: 'recruiting'
+            };
+
+            try {
+                await apiCall('/games', {
+                    method: 'POST',
+                    body: JSON.stringify(gameData)
+                });
+                
+                closeModal();
+                showMessage('Game created successfully!', 'success');
+                loadDashboardData();
+                
+                // Switch to games section
+                showSection('games');
+                
+            } catch (error) {
+                showMessage('Failed to create game: ' + error.message, 'error');
+            }
+        }
+
+        // Social Features
+        async function showCreatePost() {
+            // First, load user's games for attachment option
+            let userGames = [];
+            try {
+                const gamesData = await apiCall('/games');
+                userGames = gamesData.data.games.filter(game => 
+                    game.dm_user_id === currentUser?.id || 
+                    (game.players && game.players.some(p => p.user_id === currentUser?.id))
+                );
+            } catch (error) {
+                console.error('Failed to load user games:', error);
+            }
+
+            const gameOptions = userGames.length > 0 ? 
+                userGames.map(game => `<option value="${game.id}">${game.name} (${game.status})</option>`).join('') : 
+                '<option value="" disabled>No games available</option>';
+
+            const content = `
+                <form onsubmit="createPost(event)">
+                    <div class="form-group">
+                        <label class="form-label">Post Type</label>
+                        <select id="post-type" class="form-select" required onchange="toggleGameAttachment()">
+                            <option value="general">General Discussion</option>
+                            <option value="looking-for-group">Looking for Group</option>
+                            <option value="game-announcement">Game Announcement</option>
+                            <option value="character-showcase">Character Showcase</option>
+                            <option value="session-recap">Session Recap</option>
+                            <option value="game-recruitment">Game Recruitment</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input type="text" id="post-title" class="form-input" required placeholder="What's your post about?">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Content</label>
+                        <textarea id="post-content" class="form-input textarea" required placeholder="Share your thoughts, stories, or announcements with the community..." style="min-height: 150px;"></textarea>
+                    </div>
+                    
+                    <div class="form-group" id="game-attachment-section">
+                        <label class="form-label">
+                            <input type="checkbox" id="attach-game" onchange="toggleGameSelection()"> 
+                            Attach a game to this post
+                        </label>
+                        <div id="game-selection" class="hidden" style="margin-top: 12px;">
+                            <label class="form-label">Select Game</label>
+                            <select id="attached-game" class="form-select">
+                                <option value="">Choose a game...</option>
+                                ${gameOptions}
+                            </select>
+                            <div style="margin-top: 8px; padding: 12px; background: var(--surface-hover); border-radius: 6px; font-size: 13px; color: var(--on-surface-variant);">
+                                <i class="fas fa-info-circle"></i> 
+                                Attaching a game will show game details and allow others to join directly from your post.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tags (optional)</label>
+                        <input type="text" id="post-tags" class="form-input" placeholder="e.g., D&D, Beginner, Online, Fantasy">
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            Create Post
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            `;
+            showModal('Create New Post', content);
+        }
+
+        function toggleGameAttachment() {
+            const postType = document.getElementById('post-type').value;
+            const attachGameCheckbox = document.getElementById('attach-game');
+            
+            // Auto-check game attachment for certain post types
+            if (['looking-for-group', 'game-announcement', 'session-recap', 'game-recruitment'].includes(postType)) {
+                attachGameCheckbox.checked = true;
+                toggleGameSelection();
+            }
+        }
+
+        function toggleGameSelection() {
+            const isChecked = document.getElementById('attach-game').checked;
+            const gameSelection = document.getElementById('game-selection');
+            
+            if (isChecked) {
+                gameSelection.classList.remove('hidden');
+            } else {
+                gameSelection.classList.add('hidden');
+                document.getElementById('attached-game').value = '';
+            }
+        }
+
+        async function createPost(event) {
+            event.preventDefault();
+            
+            const attachedGameId = document.getElementById('attached-game')?.value || null;
+            
+            const postData = {
+                type: document.getElementById('post-type').value,
+                title: document.getElementById('post-title').value,
+                content: document.getElementById('post-content').value,
+                tags: document.getElementById('post-tags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+                attached_game_id: attachedGameId
+            };
+
+            try {
+                await apiCall('/social/posts', {
+                    method: 'POST',
+                    body: JSON.stringify(postData)
+                });
+                
+                closeModal();
+                showMessage('Post created successfully!', 'success');
+                loadSocialFeed(); // Refresh the feed to show the new post
+                
+            } catch (error) {
+                showMessage('Failed to create post: ' + error.message, 'error');
+            }
+        }
+
+        function showAddFriend() {
+            const content = `
+                <form onsubmit="sendFriendRequest(event)">
+                    <div class="form-group">
+                        <label class="form-label">Username or Email</label>
+                        <input type="text" id="friend-username" class="form-input" required placeholder="Enter username or email">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Message (optional)</label>
+                        <textarea id="friend-message" class="form-input textarea" placeholder="Add a personal message with your friend request..."></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i>
+                            Send Friend Request
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            `;
+            showModal('Add Friend', content);
+        }
+
+        async function sendFriendRequest(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('friend-username').value.trim();
+            const message = document.getElementById('friend-message').value.trim();
+            
+            try {
+                await apiCall('/social/friends/request', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, message })
+                });
+                
+                closeModal();
+                showMessage('Friend request sent!', 'success');
+                
+            } catch (error) {
+                showMessage('Failed to send friend request: ' + error.message, 'error');
+            }
+        }
+
+        function showRegister() {
+            showMessage('Registration coming soon!', 'info');
+        }
+
+        // Game Action Functions
+        async function joinGame(gameId) {
+            try {
+                await apiCall(`/games/${gameId}/join`, {
+                    method: 'POST'
+                });
+                
+                showMessage('Successfully joined the game!', 'success');
+                loadDashboardData();
+                
+            } catch (error) {
+                showMessage('Failed to join game: ' + error.message, 'error');
+            }
+        }
+
+        function editGame(gameId, game) {
+            const content = `
+                <form onsubmit="updateGame(event, '${gameId}')">
+                    <div class="form-section">
+                        <h3>Game Information</h3>
+                        <div class="form-group">
+                            <label class="form-label">Game Name</label>
+                            <input type="text" id="edit-game-name" class="form-input" value="${game.name}" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Game System</label>
+                                <select id="edit-game-system" class="form-select" required>
+                                    <option value="D&D 5e" ${game.system === 'D&D 5e' ? 'selected' : ''}>D&D 5th Edition</option>
+                                    <option value="Pathfinder" ${game.system === 'Pathfinder' ? 'selected' : ''}>Pathfinder</option>
+                                    <option value="Call of Cthulhu" ${game.system === 'Call of Cthulhu' ? 'selected' : ''}>Call of Cthulhu</option>
+                                    <option value="Other" ${game.system === 'Other' ? 'selected' : ''}>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Max Players</label>
+                                <input type="number" id="edit-game-max-players" class="form-input" value="${game.max_players}" min="2" max="8" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Game Description</label>
+                            <textarea id="edit-game-description" class="form-input textarea" required>${game.description}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Status</label>
+                            <select id="edit-game-status" class="form-select">
+                                <option value="recruiting" ${game.status === 'recruiting' ? 'selected' : ''}>Recruiting</option>
+                                <option value="active" ${game.status === 'active' ? 'selected' : ''}>Active</option>
+                                <option value="paused" ${game.status === 'paused' ? 'selected' : ''}>Paused</option>
+                                <option value="completed" ${game.status === 'completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Update Game
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            `;
+            showModal('Edit Game', content);
+        }
+
+        async function updateGame(event, gameId) {
+            event.preventDefault();
+            
+            const gameData = {
+                name: document.getElementById('edit-game-name').value,
+                description: document.getElementById('edit-game-description').value,
+                system: document.getElementById('edit-game-system').value,
+                max_players: parseInt(document.getElementById('edit-game-max-players').value),
+                status: document.getElementById('edit-game-status').value
+            };
+
+            try {
+                await apiCall(`/games/${gameId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(gameData)
+                });
+                
+                closeModal();
+                showMessage('Game updated successfully!', 'success');
+                loadDashboardData();
+                
+            } catch (error) {
+                showMessage('Failed to update game: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteGame(gameId, gameName) {
+            if (!confirm(`Are you sure you want to delete "${gameName}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                await apiCall(`/games/${gameId}`, {
+                    method: 'DELETE'
+                });
+                
+                showMessage('Game deleted successfully', 'success');
+                loadDashboardData();
+                
+            } catch (error) {
+                showMessage('Failed to delete game: ' + error.message, 'error');
+            }
+        }
+
+        async function startGame(gameId) {
+            try {
+                await apiCall(`/games/${gameId}/start`, {
+                    method: 'POST'
+                });
+                
+                showMessage('Game started successfully!', 'success');
+                loadDashboardData();
+                
+            } catch (error) {
+                showMessage('Failed to start game: ' + error.message, 'error');
+            }
+        }
+
+        async function pauseGame(gameId) {
+            try {
+                await apiCall(`/games/${gameId}/pause`, {
+                    method: 'POST'
+                });
+                
+                showMessage('Game paused', 'info');
+                loadDashboardData();
+                
+            } catch (error) {
+                showMessage('Failed to pause game: ' + error.message, 'error');
+            }
+        }
+
+        async function stopGame(gameId) {
+            if (!confirm('Are you sure you want to stop this game? This will mark it as completed.')) {
+                return;
+            }
+
+            try {
+                await apiCall(`/games/${gameId}/stop`, {
+                    method: 'POST'
+                });
+                
+                showMessage('Game completed', 'success');
+                loadDashboardData();
+                
+            } catch (error) {
+                showMessage('Failed to stop game: ' + error.message, 'error');
+            }
+        }
+
+        async function leaveGame(gameId, gameName) {
+            if (!confirm(`Are you sure you want to leave "${gameName}"?`)) {
+                return;
+            }
+
+            try {
+                await apiCall(`/games/${gameId}/leave`, {
+                    method: 'POST'
+                });
+                
+                showMessage('Left the game successfully', 'info');
+                loadDashboardData();
+                
+            } catch (error) {
+                showMessage('Failed to leave game: ' + error.message, 'error');
+            }
+        }
+
+        // Character utility functions
+        function viewCharacter(characterId) {
+            // Find character in loaded data
+            // This would typically make an API call for full details
+            showMessage('Character details view coming soon!', 'info');
+        }
+
+        function editCharacter(characterId, character) {
+            const content = `
+                <form onsubmit="updateCharacter(event, '${characterId}')">
+                    <div class="form-section">
+                        <h3>Basic Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Character Name</label>
+                                <input type="text" id="edit-char-name" class="form-input" value="${character.name}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Level</label>
+                                <input type="number" id="edit-char-level" class="form-input" value="${character.level}" min="1" max="20" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Background</label>
+                            <input type="text" id="edit-char-background" class="form-input" value="${character.background || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <textarea id="edit-char-description" class="form-input textarea">${character.description || ''}</textarea>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Update Character
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    </div>
+                </form>
+            `;
+            showModal('Edit Character', content);
+        }
+
+        async function updateCharacter(event, characterId) {
+            event.preventDefault();
+            
+            const characterData = {
+                name: document.getElementById('edit-char-name').value,
+                level: parseInt(document.getElementById('edit-char-level').value),
+                background: document.getElementById('edit-char-background').value,
+                description: document.getElementById('edit-char-description').value
+            };
+
+            try {
+                await apiCall(`/characters/${characterId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(characterData)
+                });
+                
+                closeModal();
+                showMessage('Character updated successfully!', 'success');
+                loadDashboardData();
+                
+            } catch (error) {
+                showMessage('Failed to update character: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteCharacter(characterId, characterName) {
+            if (!confirm(`Are you sure you want to delete "${characterName}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                await apiCall(`/characters/${characterId}`, {
+                    method: 'DELETE'
+                });
+                
+                showMessage('Character deleted successfully', 'success');
+                loadDashboardData();
+                
+            } catch (error) {
+                showMessage('Failed to delete character: ' + error.message, 'error');
+            }
+        }
+
+        // Game utility functions
+        function viewGame(gameId) {
+            showMessage('Game details view coming soon!', 'info');
+        }
+
+        // Post interaction functions
+        async function likePost(postId) {
+            try {
+                await apiCall(`/social/posts/${postId}/like`, {
+                    method: 'POST'
+                });
+                loadSocialFeed(); // Refresh to show updated like count
+            } catch (error) {
+                showMessage('Failed to like post: ' + error.message, 'error');
+            }
+        }
+
+        function commentOnPost(postId) {
+            showMessage('Comment system coming soon!', 'info');
+        }
+
+        function sharePost(postId) {
+            showMessage('Share functionality coming soon!', 'info');
+        }
+
+        function viewAttachedGame(gameId) {
+            // Switch to games section and highlight the specific game
+            showSection('games');
+            showMessage('Switched to Games section. Game details view coming soon!', 'info');
+        }
+
+        async function joinGameFromPost(gameId) {
+            try {
+                await apiCall(`/games/${gameId}/join`, {
+                    method: 'POST'
+                });
+                
+                showMessage('Successfully joined the game!', 'success');
+                loadDashboardData(); // Refresh all data
+                
+            } catch (error) {
+                showMessage('Failed to join game: ' + error.message, 'error');
+            }
+        }
+
+        // Messages
+        function showMessage(text, type = 'info') {
+            const container = document.getElementById('message-container');
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.textContent = text;
+            
+            container.appendChild(message);
+            
+            setTimeout(() => {
+                message.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html> 
+</html> 

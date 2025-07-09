@@ -210,18 +210,28 @@ export const authController = {
         { expiresIn: config.jwt.refreshExpiresIn } as jwt.SignOptions
       );
 
-      // Store tokens in database
+      // Store tokens in database (separate entries for access and refresh tokens)
       const tokenId = uuidv4();
+      const refreshTokenId = uuidv4();
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
       await db('auth_tokens').insert({
         id: tokenId,
         user_id: user.id,
         token: accessToken,
-        refresh_token: refreshToken,
-        token_type: 'access',
+        type: 'access',
         expires_at: expiresAt,
-        is_active: true,
+        is_revoked: false,
+      });
+
+      await db('auth_tokens').insert({
+        id: refreshTokenId,
+        user_id: user.id,
+        token: refreshToken,
+        type: 'refresh',
+        expires_at: refreshExpiresAt,
+        is_revoked: false,
       });
 
       // Update last login
@@ -296,9 +306,10 @@ export const authController = {
 
       // Check if refresh token exists and is active
       const tokenRecord = await db('auth_tokens')
-        .where('refresh_token', refresh_token)
+        .where('token', refresh_token)
         .where('user_id', decoded.userId)
-        .where('is_active', true)
+        .where('type', 'refresh')
+        .where('is_revoked', false)
         .first();
 
       if (!tokenRecord) {
@@ -407,7 +418,7 @@ export const authController = {
       await db('auth_tokens')
         .where('token', token)
         .where('user_id', req.user.id)
-        .update({ is_active: false });
+        .update({ is_revoked: true });
 
       // Update user online status
       await db('users')

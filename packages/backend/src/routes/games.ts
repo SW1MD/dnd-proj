@@ -7,6 +7,9 @@ const router = Router();
 // All game routes require authentication
 router.use(authenticate);
 
+// General dice rolling (not tied to a specific game)
+router.post('/dice/roll', gameController.rollDice);
+
 // Game session CRUD
 router.get('/', gameController.getGames);
 router.post('/', gameController.createGame);

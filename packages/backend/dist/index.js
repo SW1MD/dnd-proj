@@ -30,7 +30,22 @@ async function startServer() {
                 methods: ['GET', 'POST'],
             },
         });
-        app.use((0, helmet_1.default)());
+        app.use((0, helmet_1.default)({
+            contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    scriptSrc: ["'self'", "'unsafe-inline'"],
+                    scriptSrcAttr: ["'unsafe-inline'"],
+                    styleSrc: ["'self'", "'unsafe-inline'"],
+                    imgSrc: ["'self'", "data:", "https:"],
+                    connectSrc: ["'self'"],
+                    fontSrc: ["'self'"],
+                    objectSrc: ["'none'"],
+                    mediaSrc: ["'self'"],
+                    frameSrc: ["'none'"],
+                },
+            },
+        }));
         app.use((0, cors_1.default)({
             origin: config_1.config.corsOrigin,
             credentials: true,
@@ -49,6 +64,18 @@ async function startServer() {
             fs_1.default.mkdirSync(uploadDir, { recursive: true });
         }
         app.use('/uploads', express_1.default.static(uploadDir));
+        app.get('/', (req, res) => {
+            const frontendPath = path_1.default.join(__dirname, '../../desktop/index.html');
+            if (fs_1.default.existsSync(frontendPath)) {
+                res.sendFile(frontendPath);
+            }
+            else {
+                res.status(404).json({
+                    error: 'Frontend not found',
+                    message: 'The test frontend is not available. Please check the desktop package.',
+                });
+            }
+        });
         app.get('/health', (req, res) => {
             res.json({
                 status: 'ok',

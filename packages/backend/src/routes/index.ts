@@ -4,6 +4,8 @@ import userRoutes from './users';
 import characterRoutes from './characters';
 import gameRoutes from './games';
 import mapRoutes from './maps';
+import socialRoutes from './social';
+import diceRoutes from './dice';
 import { notFoundHandler } from '../middleware/errorHandler';
 
 export function setupRoutes(app: Express): void {
@@ -27,6 +29,12 @@ export function setupRoutes(app: Express): void {
 
   // Map routes
   app.use(`${apiVersion}/maps`, mapRoutes);
+
+  // Social routes (friends, messaging, invitations)
+  app.use(`${apiVersion}/social`, socialRoutes);
+
+  // Dice rolling routes
+  app.use(`${apiVersion}/dice`, diceRoutes);
 
   // 404 handler for undefined routes
   app.use('*', notFoundHandler);

@@ -1,0 +1,26 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const social_1 = require("../controllers/social");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.get('/friends', social_1.socialController.getFriends);
+router.post('/friends/request', social_1.socialController.sendFriendRequest);
+router.get('/friends/requests', social_1.socialController.getFriendRequests);
+router.post('/friends/requests/:requestId/respond', social_1.socialController.respondToFriendRequest);
+router.delete('/friends/:friendshipId', social_1.socialController.removeFriend);
+router.get('/conversations', social_1.socialController.getConversations);
+router.get('/messages/:partnerId', social_1.socialController.getMessages);
+router.post('/messages', social_1.socialController.sendMessage);
+router.post('/game-invitations', social_1.socialController.sendGameInvitation);
+router.get('/game-invitations', social_1.socialController.getGameInvitations);
+router.post('/game-invitations/:invitationId/respond', social_1.socialController.respondToGameInvitation);
+router.get('/profile/:userId', social_1.socialController.getUserProfile);
+router.put('/profile', social_1.socialController.updateUserProfile);
+router.get('/posts', social_1.socialController.getPostsFeed);
+router.post('/posts', social_1.socialController.createPost);
+router.get('/notifications', social_1.socialController.getNotifications);
+router.put('/notifications/read', social_1.socialController.markNotificationsAsRead);
+exports.default = router;
+//# sourceMappingURL=social.js.map

@@ -5,6 +5,7 @@ const games_1 = require("../controllers/games");
 const auth_1 = require("../middleware/auth");
 const router = (0, express_1.Router)();
 router.use(auth_1.authenticate);
+router.post('/dice/roll', games_1.gameController.rollDice);
 router.get('/', games_1.gameController.getGames);
 router.post('/', games_1.gameController.createGame);
 router.get('/:id', games_1.gameController.getGame);
