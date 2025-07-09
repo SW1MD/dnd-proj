@@ -8,6 +8,7 @@ router.use(auth_1.authenticate);
 router.get('/profile', users_1.userController.getProfile);
 router.put('/profile', users_1.userController.updateProfile);
 router.delete('/profile', users_1.userController.deleteProfile);
+router.get('/public/:userId', users_1.userController.getPublicProfile);
 router.get('/stats', users_1.userController.getStats);
 router.get('/friends', users_1.userController.getFriends);
 router.post('/friends/request', users_1.userController.sendFriendRequest);

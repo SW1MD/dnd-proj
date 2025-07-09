@@ -668,11 +668,10 @@ exports.gameController = {
                 return;
             }
             const messages = await db('chat_messages')
-                .select('chat_messages.*', 'users.username', 'users.display_name', 'characters.name as character_name')
+                .select('chat_messages.*', 'users.username', 'users.display_name')
                 .leftJoin('users', 'chat_messages.user_id', 'users.id')
-                .leftJoin('characters', 'chat_messages.character_id', 'characters.id')
                 .where('chat_messages.game_id', id)
-                .orderBy('chat_messages.created_at', 'desc')
+                .orderBy('chat_messages.timestamp', 'desc')
                 .limit(Number(limit))
                 .offset(Number(offset));
             res.json({
@@ -698,7 +697,7 @@ exports.gameController = {
                 return;
             }
             const { id } = req.params;
-            const { message, character_id, message_type = 'general' } = req.body;
+            const { message, message_type = 'player' } = req.body;
             const db = (0, database_1.getDatabase)();
             if (!message || message.trim().length === 0) {
                 res.status(400).json({ success: false, error: { message: 'Message cannot be empty.', statusCode: 400 } });
@@ -712,29 +711,17 @@ exports.gameController = {
                 res.status(403).json({ success: false, error: { message: 'You are not part of this game.', statusCode: 403 } });
                 return;
             }
-            if (character_id) {
-                const character = await db('characters')
-                    .where('id', character_id)
-                    .where('user_id', req.user.id)
-                    .first();
-                if (!character) {
-                    res.status(404).json({ success: false, error: { message: 'Character not found.', statusCode: 404 } });
-                    return;
-                }
-            }
             const messageId = (0, uuid_1.v4)();
             await db('chat_messages').insert({
                 id: messageId,
                 game_id: id,
                 user_id: req.user.id,
-                character_id: character_id || null,
                 message: message.trim(),
-                message_type,
+                type: message_type,
             });
             const savedMessage = await db('chat_messages')
-                .select('chat_messages.*', 'users.username', 'users.display_name', 'characters.name as character_name')
+                .select('chat_messages.*', 'users.username', 'users.display_name')
                 .leftJoin('users', 'chat_messages.user_id', 'users.id')
-                .leftJoin('characters', 'chat_messages.character_id', 'characters.id')
                 .where('chat_messages.id', messageId)
                 .first();
             logger_1.logger.info(`Chat message sent: ${req.user.email} sent message in game ${id}`);

@@ -799,11 +799,10 @@ export const gameController = {
 
       // Get chat messages
       const messages = await db('chat_messages')
-        .select('chat_messages.*', 'users.username', 'users.display_name', 'characters.name as character_name')
+        .select('chat_messages.*', 'users.username', 'users.display_name')
         .leftJoin('users', 'chat_messages.user_id', 'users.id')
-        .leftJoin('characters', 'chat_messages.character_id', 'characters.id')
         .where('chat_messages.game_id', id)
-        .orderBy('chat_messages.created_at', 'desc')
+        .orderBy('chat_messages.timestamp', 'desc')
         .limit(Number(limit))
         .offset(Number(offset));
 
@@ -831,7 +830,7 @@ export const gameController = {
       }
 
       const { id } = req.params;
-      const { message, character_id, message_type = 'general' } = req.body;
+      const { message, message_type = 'player' } = req.body;
       const db = getDatabase();
 
       if (!message || message.trim().length === 0) {
@@ -850,19 +849,6 @@ export const gameController = {
         return;
       }
 
-      // Verify character ownership if provided
-      if (character_id) {
-        const character = await db('characters')
-          .where('id', character_id)
-          .where('user_id', req.user.id)
-          .first();
-
-        if (!character) {
-          res.status(404).json({ success: false, error: { message: 'Character not found.', statusCode: 404 } });
-          return;
-        }
-      }
-
       const messageId = uuidv4();
 
       // Store message in database
@@ -870,15 +856,13 @@ export const gameController = {
         id: messageId,
         game_id: id,
         user_id: req.user.id,
-        character_id: character_id || null,
         message: message.trim(),
-        message_type,
+        type: message_type,
       });
 
       const savedMessage = await db('chat_messages')
-        .select('chat_messages.*', 'users.username', 'users.display_name', 'characters.name as character_name')
+        .select('chat_messages.*', 'users.username', 'users.display_name')
         .leftJoin('users', 'chat_messages.user_id', 'users.id')
-        .leftJoin('characters', 'chat_messages.character_id', 'characters.id')
         .where('chat_messages.id', messageId)
         .first();
 
