@@ -1,0 +1,25 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const characters_1 = require("../controllers/characters");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.get('/', characters_1.characterController.getCharacters);
+router.post('/', characters_1.characterController.createCharacter);
+router.get('/:id', characters_1.characterController.getCharacter);
+router.put('/:id', characters_1.characterController.updateCharacter);
+router.delete('/:id', characters_1.characterController.deleteCharacter);
+router.post('/:id/level-up', characters_1.characterController.levelUp);
+router.post('/:id/rest', characters_1.characterController.rest);
+router.post('/:id/heal', characters_1.characterController.heal);
+router.post('/:id/damage', characters_1.characterController.takeDamage);
+router.get('/:id/inventory', characters_1.characterController.getInventory);
+router.post('/:id/inventory', characters_1.characterController.addItem);
+router.put('/:id/inventory/:itemId', characters_1.characterController.updateItem);
+router.delete('/:id/inventory/:itemId', characters_1.characterController.removeItem);
+router.get('/:id/spells', characters_1.characterController.getSpells);
+router.post('/:id/spells', characters_1.characterController.addSpell);
+router.delete('/:id/spells/:spellId', characters_1.characterController.removeSpell);
+exports.default = router;
+//# sourceMappingURL=characters.js.map

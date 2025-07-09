@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "build": "yarn workspaces run build",
+    "start": "npm run build --workspace=packages/backend && npm start --workspace=packages/backend",
     "dev": "concurrently \"yarn workspace @dnd/backend dev\" \"yarn workspace @dnd/desktop dev\"",
     "dev:backend": "yarn workspace @dnd/backend dev",
     "dev:desktop": "yarn workspace @dnd/desktop dev",

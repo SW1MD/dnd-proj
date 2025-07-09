@@ -1,0 +1,22 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const maps_1 = require("../controllers/maps");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.get('/', maps_1.mapController.getMaps);
+router.post('/', maps_1.mapController.createMap);
+router.get('/:id', maps_1.mapController.getMap);
+router.put('/:id', maps_1.mapController.updateMap);
+router.delete('/:id', maps_1.mapController.deleteMap);
+router.post('/generate', maps_1.mapController.generateMap);
+router.post('/generate/preview', maps_1.mapController.generateMapPreview);
+router.get('/templates', maps_1.mapController.getTemplates);
+router.post('/templates', maps_1.mapController.createTemplate);
+router.post('/:id/share', maps_1.mapController.shareMap);
+router.post('/:id/unshare', maps_1.mapController.unshareMap);
+router.post('/:id/fork', maps_1.mapController.forkMap);
+router.post('/:id/validate', maps_1.mapController.validateMap);
+exports.default = router;
+//# sourceMappingURL=maps.js.map

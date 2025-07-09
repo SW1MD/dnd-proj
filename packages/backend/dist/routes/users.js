@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const users_1 = require("../controllers/users");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.get('/profile', users_1.userController.getProfile);
+router.put('/profile', users_1.userController.updateProfile);
+router.delete('/profile', users_1.userController.deleteProfile);
+router.get('/stats', users_1.userController.getStats);
+router.get('/friends', users_1.userController.getFriends);
+router.post('/friends/request', users_1.userController.sendFriendRequest);
+router.post('/friends/accept/:requestId', users_1.userController.acceptFriendRequest);
+router.post('/friends/decline/:requestId', users_1.userController.declineFriendRequest);
+router.delete('/friends/:friendId', users_1.userController.removeFriend);
+router.get('/settings', users_1.userController.getSettings);
+router.put('/settings', users_1.userController.updateSettings);
+exports.default = router;
+//# sourceMappingURL=users.js.map
