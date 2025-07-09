@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Interface - MYTHWEAVER</title>
+    <style>
+        .map-interface {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #2d3748;
+            overflow: hidden;
+        }
+
+        .map-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .map-token {
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #8b5cf6;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .map-token:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.5);
+        }
+
+        .map-token.enemy {
+            background: #ef4444;
+        }
+
+        .map-token.npc {
+            background: #10b981;
+        }
+
+        .map-token.selected {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.3);
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .map-control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .map-control-btn:hover {
+            background: rgba(139, 92, 246, 0.8);
+        }
+
+        .map-toolbar {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .map-tool {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .map-tool:hover,
+        .map-tool.active {
+            background: #8b5cf6;
+            border-color: #8b5cf6;
+        }
+
+        .measurement-line {
+            position: absolute;
+            height: 2px;
+            background: #fbbf24;
+            transform-origin: left center;
+            pointer-events: none;
+        }
+
+        .measurement-label {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="map-interface" id="map-interface">
+        <div class="map-grid"></div>
+        
+        <!-- Sample tokens -->
+        <div class="map-token" style="left: 120px; top: 80px;" data-token="player1">A</div>
+        <div class="map-token" style="left: 200px; top: 120px;" data-token="player2">L</div>
+        <div class="map-token enemy" style="left: 320px; top: 160px;" data-token="enemy1">G</div>
+        <div class="map-token npc" style="left: 80px; top: 200px;" data-token="npc1">N</div>
+        
+        <div class="map-controls">
+            <button class="map-control-btn" onclick="zoomIn()" title="Zoom In">
+                <i class="fas fa-plus"></i>
+            </button>
+            <button class="map-control-btn" onclick="zoomOut()" title="Zoom Out">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button class="map-control-btn" onclick="resetView()" title="Reset View">
+                <i class="fas fa-expand"></i>
+            </button>
+        </div>
+        
+        <div class="map-toolbar">
+            <button class="map-tool active" onclick="selectTool('select')" title="Select">
+                <i class="fas fa-mouse-pointer"></i>
+            </button>
+            <button class="map-tool" onclick="selectTool('move')" title="Move">
+                <i class="fas fa-arrows-alt"></i>
+            </button>
+            <button class="map-tool" onclick="selectTool('measure')" title="Measure">
+                <i class="fas fa-ruler"></i>
+            </button>
+            <button class="map-tool" onclick="selectTool('token')" title="Add Token">
+                <i class="fas fa-user-plus"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let mapState = {
+            zoom: 1,
+            panX: 0,
+            panY: 0,
+            selectedTool: 'select',
+            selectedToken: null,
+            isDragging: false,
+            isPanning: false,
+            startX: 0,
+            startY: 0,
+            measuring: false,
+            measureStart: null
+        };
+
+        // Initialize map
+        function initializeMap() {
+            const mapInterface = document.getElementById('map-interface');
+            
+            // Add event listeners
+            mapInterface.addEventListener('mousedown', handleMouseDown);
+            mapInterface.addEventListener('mousemove', handleMouseMove);
+            mapInterface.addEventListener('mouseup', handleMouseUp);
+            mapInterface.addEventListener('wheel', handleWheel);
+            
+            // Add token event listeners
+            document.querySelectorAll('.map-token').forEach(token => {
+                token.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectToken(token);
+                });
+            });
+        }
+
+        // Tool selection
+        function selectTool(tool) {
+            mapState.selectedTool = tool;
+            document.querySelectorAll('.map-tool').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.map-tool').classList.add('active');
+            
+            // Clear any active measurements
+            clearMeasurements();
+        }
+
+        // Token selection
+        function selectToken(token) {
+            document.querySelectorAll('.map-token').forEach(t => {
+                t.classList.remove('selected');
+            });
+            token.classList.add('selected');
+            mapState.selectedToken = token;
+        }
+
+        // Mouse event handlers
+        function handleMouseDown(e) {
+            if (e.target.classList.contains('map-token')) {
+                if (mapState.selectedTool === 'move') {
+                    mapState.isDragging = true;
+                    mapState.startX = e.clientX - parseInt(e.target.style.left);
+                    mapState.startY = e.clientY - parseInt(e.target.style.top);
+                }
+                return;
+            }
+            
+            if (mapState.selectedTool === 'measure') {
+                startMeasurement(e);
+                return;
+            }
+            
+            // Pan the map
+            if (e.button === 0) {
+                mapState.isPanning = true;
+                mapState.startX = e.clientX - mapState.panX;
+                mapState.startY = e.clientY - mapState.panY;
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (mapState.isDragging && mapState.selectedToken) {
+                const newX = e.clientX - mapState.startX;
+                const newY = e.clientY - mapState.startY;
+                
+                // Snap to grid
+                const gridSize = 40;
+                const snappedX = Math.round(newX / gridSize) * gridSize;
+                const snappedY = Math.round(newY / gridSize) * gridSize;
+                
+                mapState.selectedToken.style.left = snappedX + 'px';
+                mapState.selectedToken.style.top = snappedY + 'px';
+                return;
+            }
+            
+            if (mapState.measuring && mapState.measureStart) {
+                updateMeasurement(e);
+                return;
+            }
+            
+            if (mapState.isPanning) {
+                mapState.panX = e.clientX - mapState.startX;
+                mapState.panY = e.clientY - mapState.startY;
+                updateMapTransform();
+            }
+        }
+
+        function handleMouseUp(e) {
+            if (mapState.isDragging) {
+                mapState.isDragging = false;
+                // Emit token move event
+                if (mapState.selectedToken) {
+                    emitTokenMove(mapState.selectedToken);
+                }
+            }
+            
+            if (mapState.measuring) {
+                finishMeasurement(e);
+            }
+            
+            mapState.isPanning = false;
+        }
+
+        function handleWheel(e) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            mapState.zoom = Math.max(0.5, Math.min(3, mapState.zoom + delta));
+            updateMapTransform();
+        }
+
+        // Map transformation
+        function updateMapTransform() {
+            const mapInterface = document.getElementById('map-interface');
+            mapInterface.style.transform = `translate(${mapState.panX}px, ${mapState.panY}px) scale(${mapState.zoom})`;
+        }
+
+        // Zoom controls
+        function zoomIn() {
+            mapState.zoom = Math.min(3, mapState.zoom + 0.2);
+            updateMapTransform();
+        }
+
+        function zoomOut() {
+            mapState.zoom = Math.max(0.5, mapState.zoom - 0.2);
+            updateMapTransform();
+        }
+
+        function resetView() {
+            mapState.zoom = 1;
+            mapState.panX = 0;
+            mapState.panY = 0;
+            updateMapTransform();
+        }
+
+        // Measurement functionality
+        function startMeasurement(e) {
+            mapState.measuring = true;
+            mapState.measureStart = {
+                x: e.clientX - e.currentTarget.offsetLeft,
+                y: e.clientY - e.currentTarget.offsetTop
+            };
+        }
+
+        function updateMeasurement(e) {
+            if (!mapState.measureStart) return;
+            
+            const currentX = e.clientX - e.currentTarget.offsetLeft;
+            const currentY = e.clientY - e.currentTarget.offsetTop;
+            
+            const deltaX = currentX - mapState.measureStart.x;
+            const deltaY = currentY - mapState.measureStart.y;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            // Clear previous measurement
+            clearMeasurements();
+            
+            // Create measurement line
+            const line = document.createElement('div');
+            line.className = 'measurement-line';
+            line.style.left = mapState.measureStart.x + 'px';
+            line.style.top = mapState.measureStart.y + 'px';
+            line.style.width = distance + 'px';
+            line.style.transform = `rotate(${Math.atan2(deltaY, deltaX)}rad)`;
+            
+            // Create measurement label
+            const label = document.createElement('div');
+            label.className = 'measurement-label';
+            label.textContent = `${Math.round(distance / 40 * 5)}ft`; // Convert pixels to feet (assuming 40px = 5ft)
+            label.style.left = (mapState.measureStart.x + currentX) / 2 + 'px';
+            label.style.top = (mapState.measureStart.y + currentY) / 2 - 20 + 'px';
+            
+            document.getElementById('map-interface').appendChild(line);
+            document.getElementById('map-interface').appendChild(label);
+        }
+
+        function finishMeasurement(e) {
+            mapState.measuring = false;
+            mapState.measureStart = null;
+            
+            // Keep the measurement visible for 3 seconds
+            setTimeout(() => {
+                clearMeasurements();
+            }, 3000);
+        }
+
+        function clearMeasurements() {
+            document.querySelectorAll('.measurement-line').forEach(el => el.remove());
+            document.querySelectorAll('.measurement-label').forEach(el => el.remove());
+        }
+
+        // Token movement events
+        function emitTokenMove(token) {
+            const tokenId = token.dataset.token;
+            const x = parseInt(token.style.left);
+            const y = parseInt(token.style.top);
+            
+            // Emit to socket if available
+            if (window.parent && window.parent.gameState && window.parent.gameState.socket) {
+                window.parent.gameState.socket.emit('token_move', {
+                    gameId: window.parent.gameState.gameId,
+                    tokenId: tokenId,
+                    x: x,
+                    y: y,
+                    userId: window.parent.gameState.currentUser?.username
+                });
+            }
+            
+            console.log(`Token ${tokenId} moved to (${x}, ${y})`);
+        }
+
+        // Initialize when loaded
+        document.addEventListener('DOMContentLoaded', initializeMap);
+    </script>
+</body>
+</html>

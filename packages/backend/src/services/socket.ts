@@ -150,6 +150,94 @@ export function setupSocketHandlers(io: Server): void {
       }
     });
 
+    // Handle token movement on the map
+    socket.on('token_move', async (data) => {
+      try {
+        const { gameId, tokenId, x, y, userId } = data;
+        
+        // TODO: Validate token ownership and update game state
+        
+        // Broadcast token movement to all players in the game
+        socket.to(`game:${gameId}`).emit('token_move_broadcast', {
+          tokenId,
+          x,
+          y,
+          userId,
+          timestamp: new Date().toISOString(),
+        });
+        
+        logger.info(`Token moved by ${userId} in game ${gameId}: ${tokenId} to (${x}, ${y})`);
+      } catch (error) {
+        logger.error(`Error handling token move:`, error);
+        socket.emit('token_move_error', { message: 'Failed to move token' });
+      }
+    });
+
+    // Handle initiative management
+    socket.on('initiative_update', async (data) => {
+      try {
+        const { gameId, initiative, userId } = data;
+        
+        // TODO: Validate DM permissions and update initiative order
+        
+        // Broadcast initiative update to all players in the game
+        io.to(`game:${gameId}`).emit('initiative_update_broadcast', {
+          initiative,
+          userId,
+          timestamp: new Date().toISOString(),
+        });
+        
+        logger.info(`Initiative updated by ${userId} in game ${gameId}`);
+      } catch (error) {
+        logger.error(`Error handling initiative update:`, error);
+        socket.emit('initiative_update_error', { message: 'Failed to update initiative' });
+      }
+    });
+
+    // Handle health/status updates
+    socket.on('health_update', async (data) => {
+      try {
+        const { gameId, characterId, health, maxHealth, userId } = data;
+        
+        // TODO: Validate character ownership or DM permissions
+        
+        // Broadcast health update to all players in the game
+        socket.to(`game:${gameId}`).emit('health_update_broadcast', {
+          characterId,
+          health,
+          maxHealth,
+          userId,
+          timestamp: new Date().toISOString(),
+        });
+        
+        logger.info(`Health updated by ${userId} in game ${gameId}: ${characterId}`);
+      } catch (error) {
+        logger.error(`Error handling health update:`, error);
+        socket.emit('health_update_error', { message: 'Failed to update health' });
+      }
+    });
+
+    // Handle turn management
+    socket.on('turn_change', async (data) => {
+      try {
+        const { gameId, currentTurn, userId } = data;
+        
+        // TODO: Validate DM permissions
+        
+        // Broadcast turn change to all players in the game
+        io.to(`game:${gameId}`).emit('turn_change_broadcast', {
+          currentTurn,
+          userId,
+          timestamp: new Date().toISOString(),
+        });
+        
+        logger.info(`Turn changed by ${userId} in game ${gameId} to ${currentTurn}`);
+      } catch (error) {
+        logger.error(`Error handling turn change:`, error);
+        socket.emit('turn_change_error', { message: 'Failed to change turn' });
+      }
+    });
+
     // Handle disconnection
     socket.on('disconnect', () => {
       logger.info(`User disconnected: ${socket.id}`);

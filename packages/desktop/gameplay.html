@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gameplay - MYTHWEAVER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --primary-light: #a78bfa;
+            --surface: #111827;
+            --surface-variant: #0a0a0a;
+            --surface-hover: #1f2937;
+            --surface-card: #1a1a1a;
+            --outline: #374151;
+            --outline-variant: #4b5563;
+            --on-surface: #f9fafb;
+            --on-surface-variant: #d1d5db;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #8b5cf6;
+            --shadow: rgba(0, 0, 0, 0.5);
+            --shadow-light: rgba(0, 0, 0, 0.25);
+            --shadow-purple: rgba(139, 92, 246, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--surface-variant);
+            color: var(--on-surface);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-areas: 
+                "header header header"
+                "sidebar main rightbar"
+                "sidebar main rightbar";
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: 60px 1fr;
+            height: 100vh;
+            gap: 1px;
+            background: var(--outline);
+        }
+
+        .game-header {
+            grid-area: header;
+            background: var(--surface);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--outline);
+        }
+
+        .game-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .game-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .game-sidebar {
+            grid-area: sidebar;
+            background: var(--surface);
+            overflow-y: auto;
+            border-right: 1px solid var(--outline);
+        }
+
+        .game-main {
+            grid-area: main;
+            background: var(--surface-variant);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .game-rightbar {
+            grid-area: rightbar;
+            background: var(--surface);
+            border-left: 1px solid var(--outline);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Tabs */
+        .tab-nav {
+            display: flex;
+            border-bottom: 1px solid var(--outline);
+            background: var(--surface);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            background: none;
+            border: none;
+            color: var(--on-surface-variant);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: var(--surface-hover);
+            color: var(--on-surface);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: var(--surface-hover);
+        }
+
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        /* Character Sheet */
+        .character-sheet {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .character-header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--surface-card);
+            border-radius: 8px;
+            border: 1px solid var(--outline);
+        }
+
+        .character-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .character-info h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .character-info p {
+            color: var(--on-surface-variant);
+            font-size: 14px;
+        }
+
+        .stat-block {
+            background: var(--surface-card);
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid var(--outline);
+        }
+
+        .stat-block h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ability-scores {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .ability-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            background: var(--surface-hover);
+            border-radius: 6px;
+            border: 1px solid var(--outline);
+        }
+
+        .ability-name {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--on-surface-variant);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .ability-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--on-surface);
+            margin-bottom: 2px;
+        }
+
+        .ability-modifier {
+            font-size: 12px;
+            color: var(--on-surface-variant);
+        }
+
+        .health-bar {
+            background: var(--surface-hover);
+            border-radius: 6px;
+            height: 24px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .health-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        .health-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--on-surface);
+        }
+
+        /* Initiative Tracker */
+        .initiative-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .initiative-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--surface-card);
+            border-radius: 6px;
+            border: 1px solid var(--outline);
+            transition: all 0.2s ease;
+        }
+
+        .initiative-item.active {
+            border-color: var(--primary);
+            background: var(--surface-hover);
+        }
+
+        .initiative-order {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .initiative-info {
+            flex: 1;
+        }
+
+        .initiative-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .initiative-value {
+            font-size: 12px;
+            color: var(--on-surface-variant);
+        }
+
+        /* Combat Actions */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 12px;
+            background: var(--surface-card);
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: var(--on-surface);
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            background: var(--surface-hover);
+            transform: translateY(-1px);
+        }
+
+        .action-btn i {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .action-btn span {
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Chat */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: var(--surface-hover);
+        }
+
+        .chat-message {
+            display: flex;
+            margin-bottom: 12px;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .chat-message.system {
+            justify-content: center;
+        }
+
+        .chat-message.system .message-content {
+            background: var(--info);
+            color: white;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .chat-message.dice {
+            background: var(--surface-card);
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+
+        .chat-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 8px 12px;
+            border-radius: 16px;
+            background: var(--surface-card);
+            border: 1px solid var(--outline);
+            font-size: 14px;
+        }
+
+        .message-author {
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+
+        .message-time {
+            font-size: 10px;
+            color: var(--on-surface-variant);
+            margin-top: 4px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 8px;
+            padding: 16px;
+            background: var(--surface);
+            border-top: 1px solid var(--outline);
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--outline);
+            border-radius: 20px;
+            background: var(--surface-hover);
+            color: var(--on-surface);
+            font-size: 14px;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .chat-input button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .chat-input button:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Dice Rolling */
+        .dice-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .dice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 8px;
+        }
+
+        .dice-btn {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            border: 2px solid var(--outline);
+            border-radius: 8px;
+            background: var(--surface-card);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .dice-btn:hover {
+            border-color: var(--primary);
+            background: var(--surface-hover);
+            transform: translateY(-2px);
+        }
+
+        .dice-btn i {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .dice-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .dice-controls input {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid var(--outline);
+            border-radius: 4px;
+            background: var(--surface-hover);
+            color: var(--on-surface);
+            text-align: center;
+        }
+
+        .dice-result {
+            padding: 16px;
+            background: var(--surface-card);
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .dice-total {
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+                 .dice-breakdown {
+             font-size: 14px;
+             color: var(--on-surface-variant);
+         }
+
+         /* Inventory Grid */
+         .inventory-grid {
+             display: flex;
+             flex-direction: column;
+             gap: 8px;
+         }
+
+         .inventory-item {
+             display: flex;
+             align-items: center;
+             gap: 12px;
+             padding: 12px;
+             background: var(--surface-hover);
+             border: 1px solid var(--outline);
+             border-radius: 6px;
+             transition: all 0.2s ease;
+         }
+
+         .inventory-item:hover {
+             border-color: var(--primary);
+             background: var(--surface-card);
+         }
+
+         .inventory-item i {
+             font-size: 20px;
+             color: var(--primary);
+             width: 24px;
+             text-align: center;
+         }
+
+         /* Player List */
+         .player-list {
+             display: flex;
+             flex-direction: column;
+             gap: 8px;
+         }
+
+         .player-item {
+             display: flex;
+             align-items: center;
+             gap: 12px;
+             padding: 12px;
+             background: var(--surface-card);
+             border: 1px solid var(--outline);
+             border-radius: 6px;
+             transition: all 0.2s ease;
+         }
+
+         .player-item:hover {
+             border-color: var(--primary);
+             background: var(--surface-hover);
+         }
+
+         .player-avatar {
+             width: 40px;
+             height: 40px;
+             border-radius: 50%;
+             background: var(--primary);
+             color: white;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             font-size: 16px;
+             font-weight: 600;
+             flex-shrink: 0;
+         }
+
+         .player-info {
+             flex: 1;
+         }
+
+         .player-name {
+             font-weight: 600;
+             font-size: 14px;
+             margin-bottom: 2px;
+         }
+
+         .player-status {
+             font-size: 12px;
+             color: var(--success);
+         }
+
+         /* Utility Classes */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: var(--surface-variant);
+            color: var(--on-surface);
+            border: 1px solid var(--outline);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-hover);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .map-container {
+            flex: 1;
+            background: var(--surface-card);
+            border: 1px solid var(--outline);
+            border-radius: 8px;
+            margin: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--on-surface-variant);
+        }
+
+        .map-placeholder {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .map-placeholder i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .game-container {
+                grid-template-columns: 250px 1fr 280px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .game-container {
+                grid-template-areas: 
+                    "header header"
+                    "main main"
+                    "sidebar rightbar";
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 60px 1fr 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Game Header -->
+        <header class="game-header">
+            <div class="game-title">
+                <i class="fas fa-dice-d20"></i>
+                <span id="game-name">Loading Game...</span>
+            </div>
+            <div class="game-actions">
+                <button class="btn btn-secondary btn-sm" onclick="showSettings()">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="leaveGame()">
+                    <i class="fas fa-door-open"></i>
+                    Leave Game
+                </button>
+            </div>
+        </header>
+
+        <!-- Left Sidebar -->
+        <aside class="game-sidebar">
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="showTab('character')">
+                    <i class="fas fa-user"></i>
+                    Character
+                </button>
+                <button class="tab-btn" onclick="showTab('inventory')">
+                    <i class="fas fa-backpack"></i>
+                    Items
+                </button>
+            </div>
+            
+            <div class="tab-content">
+                <!-- Character Tab -->
+                <div id="character-tab" class="tab-panel">
+                    <div class="character-sheet">
+                        <div class="character-header">
+                            <div class="character-avatar" id="char-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="character-info">
+                                <h3 id="char-name">Character Name</h3>
+                                <p id="char-details">Level 1 Human Fighter</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-block">
+                            <h4>Ability Scores</h4>
+                            <div class="ability-scores">
+                                <div class="ability-score">
+                                    <div class="ability-name">STR</div>
+                                    <div class="ability-value">16</div>
+                                    <div class="ability-modifier">+3</div>
+                                </div>
+                                <div class="ability-score">
+                                    <div class="ability-name">DEX</div>
+                                    <div class="ability-value">14</div>
+                                    <div class="ability-modifier">+2</div>
+                                </div>
+                                <div class="ability-score">
+                                    <div class="ability-name">CON</div>
+                                    <div class="ability-value">15</div>
+                                    <div class="ability-modifier">+2</div>
+                                </div>
+                                <div class="ability-score">
+                                    <div class="ability-name">INT</div>
+                                    <div class="ability-value">10</div>
+                                    <div class="ability-modifier">+0</div>
+                                </div>
+                                <div class="ability-score">
+                                    <div class="ability-name">WIS</div>
+                                    <div class="ability-value">12</div>
+                                    <div class="ability-modifier">+1</div>
+                                </div>
+                                <div class="ability-score">
+                                    <div class="ability-name">CHA</div>
+                                    <div class="ability-value">8</div>
+                                    <div class="ability-modifier">-1</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-block">
+                            <h4>Health & Status</h4>
+                            <div class="health-bar">
+                                <div class="health-fill" style="width: 75%"></div>
+                                <div class="health-text">24/32 HP</div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-top: 8px;">
+                                <span>AC: 16</span>
+                                <span>Speed: 30 ft</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-block">
+                        <h4>Combat Actions</h4>
+                        <div class="action-grid">
+                            <button class="action-btn" onclick="performAction('attack')">
+                                <i class="fas fa-sword"></i>
+                                <span>Attack</span>
+                            </button>
+                            <button class="action-btn" onclick="performAction('cast')">
+                                <i class="fas fa-magic"></i>
+                                <span>Cast Spell</span>
+                            </button>
+                            <button class="action-btn" onclick="performAction('dash')">
+                                <i class="fas fa-running"></i>
+                                <span>Dash</span>
+                            </button>
+                            <button class="action-btn" onclick="performAction('dodge')">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Dodge</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Tab -->
+                <div id="inventory-tab" class="tab-panel hidden">
+                    <div class="stat-block">
+                        <h4>Equipment</h4>
+                        <div class="inventory-grid">
+                            <div class="inventory-item">
+                                <i class="fas fa-sword"></i>
+                                <span>Longsword</span>
+                            </div>
+                            <div class="inventory-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Shield</span>
+                            </div>
+                            <div class="inventory-item">
+                                <i class="fas fa-user-shield"></i>
+                                <span>Chain Mail</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Game Area -->
+        <main class="game-main">
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="showMainTab('map')">
+                    <i class="fas fa-map"></i>
+                    Map
+                </button>
+                <button class="tab-btn" onclick="showMainTab('combat')">
+                    <i class="fas fa-sword"></i>
+                    Combat
+                </button>
+                <button class="tab-btn" onclick="showMainTab('notes')">
+                    <i class="fas fa-sticky-note"></i>
+                    Notes
+                </button>
+            </div>
+
+            <div class="tab-content">
+                <!-- Map Tab -->
+                <div id="map-tab" class="tab-panel">
+                    <div class="map-container">
+                        <iframe src="components/map-interface.html" frameborder="0" style="width: 100%; height: 100%; border-radius: 8px;"></iframe>
+                    </div>
+                </div>
+
+                <!-- Combat Tab -->
+                <div id="combat-tab" class="tab-panel hidden">
+                    <div class="stat-block">
+                        <h4>Initiative Order</h4>
+                        <button class="btn btn-primary btn-sm" onclick="rollInitiative()" style="margin-bottom: 12px;">
+                            <i class="fas fa-dice-d20"></i>
+                            Roll Initiative
+                        </button>
+                        <div class="initiative-list">
+                            <div class="initiative-item active">
+                                <div class="initiative-order">1</div>
+                                <div class="initiative-info">
+                                    <div class="initiative-name">Aragorn</div>
+                                    <div class="initiative-value">Initiative: 18</div>
+                                </div>
+                            </div>
+                            <div class="initiative-item">
+                                <div class="initiative-order">2</div>
+                                <div class="initiative-info">
+                                    <div class="initiative-name">Goblin Archer</div>
+                                    <div class="initiative-value">Initiative: 14</div>
+                                </div>
+                            </div>
+                            <div class="initiative-item">
+                                <div class="initiative-order">3</div>
+                                <div class="initiative-info">
+                                    <div class="initiative-name">Legolas</div>
+                                    <div class="initiative-value">Initiative: 12</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes Tab -->
+                <div id="notes-tab" class="tab-panel hidden">
+                    <div class="stat-block">
+                        <h4>Session Notes</h4>
+                        <textarea placeholder="Add your notes here..." style="width: 100%; height: 200px; background: var(--surface-hover); border: 1px solid var(--outline); border-radius: 6px; padding: 12px; color: var(--on-surface); font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="game-rightbar">
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="showRightTab('chat')">
+                    <i class="fas fa-comments"></i>
+                    Chat
+                </button>
+                <button class="tab-btn" onclick="showRightTab('dice')">
+                    <i class="fas fa-dice"></i>
+                    Dice
+                </button>
+                <button class="tab-btn" onclick="showRightTab('players')">
+                    <i class="fas fa-users"></i>
+                    Players
+                </button>
+            </div>
+
+            <div class="tab-content">
+                <!-- Chat Tab -->
+                <div id="chat-tab" class="tab-panel">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="chat-message system">
+                                <div class="message-content">Game started</div>
+                            </div>
+                            <div class="chat-message">
+                                <div class="chat-avatar">DM</div>
+                                <div>
+                                    <div class="message-author">Dungeon Master</div>
+                                    <div class="message-content">Welcome to the adventure!</div>
+                                    <div class="message-time">12:30 PM</div>
+                                </div>
+                            </div>
+                            <div class="chat-message dice">
+                                <div class="message-author">Aragorn</div>
+                                <div class="message-content">
+                                    <i class="fas fa-dice-d20"></i>
+                                    Rolling for initiative: <strong>18</strong> (d20: 15 + 3)
+                                </div>
+                                <div class="message-time">12:31 PM</div>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="chat-input" placeholder="Type a message..." onkeypress="handleChatKeyPress(event)">
+                            <button onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dice Tab -->
+                <div id="dice-tab" class="tab-panel hidden">
+                    <div class="dice-panel">
+                        <div class="dice-result">
+                            <div class="dice-total" id="dice-total">-</div>
+                            <div class="dice-breakdown" id="dice-breakdown">Roll some dice!</div>
+                        </div>
+                        
+                        <div class="dice-controls">
+                            <input type="number" id="dice-count" value="1" min="1" max="20">
+                            <span>d</span>
+                            <input type="number" id="dice-sides" value="20" min="2" max="100">
+                            <span>+</span>
+                            <input type="number" id="dice-modifier" value="0" min="-100" max="100">
+                        </div>
+
+                        <div class="dice-grid">
+                            <button class="dice-btn" onclick="rollDice(4)">
+                                <i class="fas fa-dice-d4"></i>
+                                <span>d4</span>
+                            </button>
+                            <button class="dice-btn" onclick="rollDice(6)">
+                                <i class="fas fa-dice-six"></i>
+                                <span>d6</span>
+                            </button>
+                            <button class="dice-btn" onclick="rollDice(8)">
+                                <i class="fas fa-dice-d8"></i>
+                                <span>d8</span>
+                            </button>
+                            <button class="dice-btn" onclick="rollDice(10)">
+                                <i class="fas fa-dice-d10"></i>
+                                <span>d10</span>
+                            </button>
+                            <button class="dice-btn" onclick="rollDice(12)">
+                                <i class="fas fa-dice-d12"></i>
+                                <span>d12</span>
+                            </button>
+                            <button class="dice-btn" onclick="rollDice(20)">
+                                <i class="fas fa-dice-d20"></i>
+                                <span>d20</span>
+                            </button>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="rollCustomDice()" style="width: 100%;">
+                            <i class="fas fa-dice"></i>
+                            Roll Custom
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Players Tab -->
+                <div id="players-tab" class="tab-panel hidden">
+                    <div class="stat-block">
+                        <h4>Party Members</h4>
+                        <div class="player-list">
+                            <div class="player-item">
+                                <div class="player-avatar">DM</div>
+                                <div class="player-info">
+                                    <div class="player-name">Dungeon Master</div>
+                                    <div class="player-status">Online</div>
+                                </div>
+                            </div>
+                            <div class="player-item">
+                                <div class="player-avatar">A</div>
+                                <div class="player-info">
+                                    <div class="player-name">Aragorn</div>
+                                    <div class="player-status">Online</div>
+                                </div>
+                            </div>
+                            <div class="player-item">
+                                <div class="player-avatar">L</div>
+                                <div class="player-info">
+                                    <div class="player-name">Legolas</div>
+                                    <div class="player-status">Online</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            gameId: null,
+            currentUser: null,
+            players: [],
+            currentTurn: 0,
+            socket: null
+        };
+
+        // Initialize game
+        function initializeGame() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const gameId = urlParams.get('game');
+            
+            if (!gameId) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            gameState.gameId = gameId;
+            
+            // Initialize socket connection
+            initializeSocket();
+            
+            // Load game data
+            loadGameData();
+            
+            // Load user data
+            loadUserData();
+        }
+
+        // Socket.IO initialization
+        function initializeSocket() {
+            gameState.socket = io();
+            
+            gameState.socket.on('connect', () => {
+                console.log('Connected to game server');
+                gameState.socket.emit('join_game', {
+                    gameId: gameState.gameId,
+                    userId: gameState.currentUser?.id
+                });
+            });
+
+            gameState.socket.on('chat_message_broadcast', (data) => {
+                addChatMessage(data);
+            });
+
+            gameState.socket.on('dice_roll_result', (data) => {
+                addDiceRollToChat(data);
+            });
+
+            gameState.socket.on('game_action_broadcast', (data) => {
+                handleGameAction(data);
+            });
+
+            gameState.socket.on('player_joined', (data) => {
+                addSystemMessage(`${data.userId} joined the game`);
+            });
+
+            gameState.socket.on('player_left', (data) => {
+                addSystemMessage(`${data.userId} left the game`);
+            });
+
+            gameState.socket.on('token_move_broadcast', (data) => {
+                handleTokenMove(data);
+            });
+
+            gameState.socket.on('initiative_update_broadcast', (data) => {
+                updateInitiativeOrder(data.initiative);
+            });
+
+            gameState.socket.on('health_update_broadcast', (data) => {
+                updateCharacterHealth(data);
+            });
+
+            gameState.socket.on('turn_change_broadcast', (data) => {
+                updateCurrentTurn(data.currentTurn);
+            });
+        }
+
+        // Load game data
+        async function loadGameData() {
+            try {
+                const response = await fetch(`/api/games/${gameState.gameId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('game-name').textContent = data.data.game.name;
+                    gameState.players = data.data.players;
+                    updatePlayersList();
+                }
+            } catch (error) {
+                console.error('Error loading game data:', error);
+            }
+        }
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                const response = await fetch('/api/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    gameState.currentUser = data.data.user;
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Tab management
+        function showTab(tabName) {
+            // Handle left sidebar tabs
+            document.querySelectorAll('.game-sidebar .tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.game-sidebar .tab-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+        }
+
+        function showMainTab(tabName) {
+            // Handle main area tabs
+            document.querySelectorAll('.game-main .tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.game-main .tab-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+        }
+
+        function showRightTab(tabName) {
+            // Handle right sidebar tabs
+            document.querySelectorAll('.game-rightbar .tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.game-rightbar .tab-panel').forEach(panel => {
+                panel.classList.add('hidden');
+            });
+
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+        }
+
+        // Chat functionality
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                gameState.socket.emit('chat_message', {
+                    gameId: gameState.gameId,
+                    message: message,
+                    userId: gameState.currentUser?.username || 'Anonymous',
+                    type: 'player'
+                });
+                input.value = '';
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function addChatMessage(data) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message';
+            
+            const time = new Date(data.timestamp).toLocaleTimeString();
+            
+            messageDiv.innerHTML = `
+                <div class="chat-avatar">${data.userId.charAt(0).toUpperCase()}</div>
+                <div>
+                    <div class="message-author">${data.userId}</div>
+                    <div class="message-content">${data.message}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function addSystemMessage(message) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message system';
+            messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Dice rolling functionality
+        function rollDice(sides) {
+            const count = parseInt(document.getElementById('dice-count').value) || 1;
+            const modifier = parseInt(document.getElementById('dice-modifier').value) || 0;
+            
+            // Update the dice sides input
+            document.getElementById('dice-sides').value = sides;
+            
+            rollCustomDice();
+        }
+
+        async function rollCustomDice() {
+            const count = parseInt(document.getElementById('dice-count').value) || 1;
+            const sides = parseInt(document.getElementById('dice-sides').value) || 20;
+            const modifier = parseInt(document.getElementById('dice-modifier').value) || 0;
+
+            try {
+                const response = await fetch('/api/dice/roll', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        sides: sides,
+                        count: count,
+                        modifier: modifier
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayDiceResult(data.data);
+                    
+                    // Broadcast dice roll to other players
+                    gameState.socket.emit('dice_roll', {
+                        gameId: gameState.gameId,
+                        userId: gameState.currentUser?.username || 'Anonymous',
+                        diceType: `${count}d${sides}`,
+                        modifier: modifier,
+                        result: data.data,
+                        description: data.data.description
+                    });
+                }
+            } catch (error) {
+                console.error('Error rolling dice:', error);
+            }
+        }
+
+        function displayDiceResult(result) {
+            document.getElementById('dice-total').textContent = result.total;
+            document.getElementById('dice-breakdown').textContent = 
+                `${result.description} = [${result.rolls.join(', ')}]${result.modifier !== 0 ? ' + ' + result.modifier : ''}`;
+        }
+
+        function addDiceRollToChat(data) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message dice';
+            
+            const time = new Date(data.timestamp).toLocaleTimeString();
+            
+            messageDiv.innerHTML = `
+                <div class="message-author">${data.userId}</div>
+                <div class="message-content">
+                    <i class="fas fa-dice-d20"></i>
+                    Rolling ${data.diceType}${data.modifier !== 0 ? (data.modifier > 0 ? '+' : '') + data.modifier : ''}: 
+                    <strong>${data.result.total}</strong> 
+                    (${data.result.rolls.join(', ')}${data.modifier !== 0 ? ' + ' + data.modifier : ''})
+                </div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Combat actions
+        function performAction(action) {
+            gameState.socket.emit('game_action', {
+                gameId: gameState.gameId,
+                userId: gameState.currentUser?.username || 'Anonymous',
+                action: {
+                    type: action,
+                    timestamp: new Date().toISOString()
+                }
+            });
+        }
+
+        function handleGameAction(data) {
+            addSystemMessage(`${data.userId} performed: ${data.action.type}`);
+        }
+
+        // Player list management
+        function updatePlayersList() {
+            const playerList = document.querySelector('.player-list');
+            if (!playerList) return;
+
+            playerList.innerHTML = '';
+            
+            gameState.players.forEach(player => {
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'player-item';
+                playerDiv.innerHTML = `
+                    <div class="player-avatar">${player.username.charAt(0).toUpperCase()}</div>
+                    <div class="player-info">
+                        <div class="player-name">${player.username}</div>
+                        <div class="player-status">Online</div>
+                    </div>
+                `;
+                playerList.appendChild(playerDiv);
+            });
+        }
+
+        // Real-time event handlers
+        function handleTokenMove(data) {
+            // Forward token move to map iframe
+            const mapFrame = document.querySelector('iframe');
+            if (mapFrame && mapFrame.contentWindow) {
+                mapFrame.contentWindow.postMessage({
+                    type: 'token_move',
+                    data: data
+                }, '*');
+            }
+            
+            addSystemMessage(`${data.userId} moved token ${data.tokenId}`);
+        }
+
+        function updateInitiativeOrder(initiative) {
+            // Update initiative display
+            const initiativeList = document.querySelector('.initiative-list');
+            if (initiativeList) {
+                initiativeList.innerHTML = '';
+                
+                initiative.forEach((item, index) => {
+                    const initiativeItem = document.createElement('div');
+                    initiativeItem.className = `initiative-item ${index === gameState.currentTurn ? 'active' : ''}`;
+                    initiativeItem.innerHTML = `
+                        <div class="initiative-order">${index + 1}</div>
+                        <div class="initiative-info">
+                            <div class="initiative-name">${item.name}</div>
+                            <div class="initiative-value">Initiative: ${item.initiative}</div>
+                        </div>
+                    `;
+                    initiativeList.appendChild(initiativeItem);
+                });
+            }
+        }
+
+        function updateCharacterHealth(data) {
+            // Update health display if it's the current user's character
+            if (data.characterId === gameState.currentUser?.characterId) {
+                const healthFill = document.querySelector('.health-fill');
+                const healthText = document.querySelector('.health-text');
+                
+                if (healthFill && healthText) {
+                    const percentage = (data.health / data.maxHealth) * 100;
+                    healthFill.style.width = `${percentage}%`;
+                    healthText.textContent = `${data.health}/${data.maxHealth} HP`;
+                }
+            }
+            
+            addSystemMessage(`${data.userId} updated health for character`);
+        }
+
+        function updateCurrentTurn(currentTurn) {
+            gameState.currentTurn = currentTurn;
+            
+            // Update initiative display
+            document.querySelectorAll('.initiative-item').forEach((item, index) => {
+                item.classList.toggle('active', index === currentTurn);
+            });
+            
+            // Add system message
+            addSystemMessage(`Turn changed to ${currentTurn + 1}`);
+        }
+
+        // Health management
+        function updateHealth(newHealth) {
+            const characterId = gameState.currentUser?.characterId;
+            if (!characterId) return;
+            
+            gameState.socket.emit('health_update', {
+                gameId: gameState.gameId,
+                characterId: characterId,
+                health: newHealth,
+                maxHealth: 32, // TODO: Get from character data
+                userId: gameState.currentUser?.username || 'Anonymous'
+            });
+        }
+
+        // Initiative management
+        function rollInitiative() {
+            // Roll d20 + DEX modifier
+            const dexModifier = 2; // TODO: Get from character data
+            const roll = Math.floor(Math.random() * 20) + 1 + dexModifier;
+            
+            gameState.socket.emit('dice_roll', {
+                gameId: gameState.gameId,
+                userId: gameState.currentUser?.username || 'Anonymous',
+                diceType: '1d20',
+                modifier: dexModifier,
+                result: {
+                    total: roll,
+                    rolls: [roll - dexModifier],
+                    modifier: dexModifier
+                },
+                description: 'Initiative Roll'
+            });
+        }
+
+        // Game management
+        function showSettings() {
+            // TODO: Implement settings modal
+            console.log('Show settings');
+        }
+
+        function leaveGame() {
+            if (confirm('Are you sure you want to leave this game?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Initialize the game when page loads
+        document.addEventListener('DOMContentLoaded', initializeGame);
+    </script>
+</body>
+</html>
